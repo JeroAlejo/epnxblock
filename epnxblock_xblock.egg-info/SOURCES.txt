@@ -1,0 +1,13 @@
+setup.py
+epnxblock/__init__.py
+epnxblock/epnxblock.py
+epnxblock/static/README.txt
+epnxblock/static/css/epnxblock.css
+epnxblock/static/html/epnxblock.html
+epnxblock/static/js/src/epnxblock.js
+epnxblock_xblock.egg-info/PKG-INFO
+epnxblock_xblock.egg-info/SOURCES.txt
+epnxblock_xblock.egg-info/dependency_links.txt
+epnxblock_xblock.egg-info/entry_points.txt
+epnxblock_xblock.egg-info/requires.txt
+epnxblock_xblock.egg-info/top_level.txt

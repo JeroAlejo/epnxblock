@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: epnxblock-xblock
+Version: 0.1
+Summary: epnxblock XBlock
+License: UNKNOWN
+Requires-Dist: XBlock
