@@ -23,7 +23,7 @@ def package_data(pkg, roots):
 
 
 setup(
-    name='epnxblock-xblock',
+    name='epnxblock',
     version='0.1',
     description='epnxblock XBlock',   # TODO: write a better description.
     license='UNKNOWN',          # TODO: choose a license: 'AGPL v3' and 'Apache 2.0' are popular.
