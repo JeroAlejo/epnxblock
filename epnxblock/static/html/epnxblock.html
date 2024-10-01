@@ -1,44 +1,19 @@
-<p>
-    <!--Para Invocar los campos del archivo de Python block.[Nombre del campo]
-    block =self palabra clave
-    -->
-    <span class='upvote'><span class='count'>{block.upvotes}</span>&uarr;</span>
-    <span class='downvote'><span class='count'>{block.downvotes}</span>&darr;</span>
 
+<div class="epn_xblock">
+    
+    <h1>Actividad Asignada</h1>
     <div>
-        <p >Voto ejecutado {block.voted}</p>
+        <h3>{block.titulo}</h3>
     </div>
-</p>
+    <div>
+        <label>Descripción: {block.descripcion}</label>
+    </div>
+    <div>
+        <p id="fecha-estudiante">Fecha de Entrega: {block.fecha_entrega}</p>
+    </div>
+    <div>
+        <h1>HOLA</h1>
+        <textarea placeholder="Ingrese su codigo "></textarea>
 
-<div class="profesor_view">
-    <h1>Configuraciones Generales</h1>
-    <form id="profesor_form">
-        <div>
-            <label for="titulo"><h3>Título:</h3></label>
-            <input type="text" id="titulo" placeholder="Introduce el título" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-            
-            <label for="descripcion"><h3>Descripción:</h3></label>
-            <textarea id="descripcion" placeholder="Introduce la descripción" rows="4" style="width: 100%; padding: 8px; margin-bottom: 10px;"></textarea>
-            
-            <label for="fecha"><h3>Código Inicial:</h3></label>
-            <textarea id="descripcion" placeholder="Introduce la descripción" rows="4" style="width: 100%; padding: 8px; margin-bottom: 10px;"></textarea>
-    
-            <input type="date" id="fecha" style="padding: 8px; margin-bottom: 10px; width: 100%;">
-        </div>
-        
-            <!--
-        <div>
-            <h1>Retroalimentación:</h1>
-            <label for="titulo"><h3>Tipo:</h3></label>
-            <select >
-                <option value="Calificacion" selected>Calificación</option>
-                <option value="Pistas">Pistas</option>
-            </select>
-        </div>
-            -->
-        <button type="submit">Guardar</button>
-
-    </form>
-    
+    </div>
 </div>
-
