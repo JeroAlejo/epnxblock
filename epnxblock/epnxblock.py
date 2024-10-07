@@ -21,27 +21,48 @@ class EpnXBlock(XBlock):
     # Los campos (Fields) Se definen en la Clase.  Se puede Acceder a ellos de la manera
     # self.<fieldname>(Campo).
 
-    #Definicion de los campos para Votacion 
-   
 
-    #Campo para almacenar informacion: PRUEBA ------------------------
+    #Campo para almacenar informacion: 
     titulo = String(
         help="Titulo de la arctividad",
-        default=None,
-        scope = Scope.user_state
+        default= "Actividad X",
+        scope = Scope.content
     )
 
     descripcion = String(
         help="Descripcion de la arctividad",
-        default=None,
-        scope = Scope.user_state
+        default="Sin asignar",
+        scope = Scope.content
     )
 
-    fecha_entrega = String(
-        help="Fecha de la arctividad",
-        default=None,
-        scope = Scope.user_state
+    salida_esperada = String(
+        help="Se almacena la salida que debe tener el programa",
+        default= "Sin asignar",
+        scope= Scope.content
     )
+
+    codigo_inicial = String(
+        help="Se almacena el codigo incial brindado por el profesor - OPCIONAL",
+        default= "Sin asignar",
+        scope= Scope.content
+    )
+
+    #Campo bandera que determina que retroalimentacion se utiliza
+
+    tipo = String(
+        help="En el se especifica que tipo de retroalimentacion escoge el profesor - OBLIGATORIA",
+        default= None,
+        scope= Scope.content
+    )
+
+    #Campos para la retroalimentacion
+    pistas = Integer(
+        help="Almacena el número de pistas que tiene disponible el estudiante",
+        default= 0,
+        scope= Scope.content
+    ) 
+
+   
 
     def resource_string(path):
         """Ayudante práctico para obtener recursos de nuestro kit."""
@@ -119,7 +140,10 @@ class EpnXBlock(XBlock):
         "Manejador que guarda las configuraciones del profesor en los campos"
         self.titulo = data.get('titulo')
         self.descripcion = data.get('descripcion')
-        self.fecha_entrega = data.get('fecha')
+        self.salida_esperada = data.get('salida_esperada')
+        self.codigo_inicial = data.get('codigo_inicial')
+        self.tipo = data.get('tipo')
+        self.pistas = data.get('pistas')
         
         return {
             'result':'success',

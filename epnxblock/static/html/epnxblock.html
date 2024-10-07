@@ -1,5 +1,5 @@
 
-<div class="epn_xblock">
+<div >
     
     <h1>Actividad Asignada</h1>
     <div>
@@ -9,11 +9,17 @@
         <label>Descripción: {block.descripcion}</label>
     </div>
     <div>
-        <p id="fecha-estudiante">Fecha de Entrega: {block.fecha_entrega}</p>
+        <p>Salida esperada: {block.salida_esperada}</p>
     </div>
     <div>
-        <h1>HOLA</h1>
-        <textarea placeholder="Ingrese su codigo "></textarea>
+        <textarea name="zona_codigo" id="zona_codigo">{block.codigo_inicial}</textarea>
+    </div>
+    <div>
+        <h2>Informacion de Retroalimentación:</h2>
+        <p>Tipo: {block.tipo}</p>
+        <p>Pistas Permitidas: {block.pistas}</p>
+
+        <button>Subir Código</button>
 
     </div>
 </div>
