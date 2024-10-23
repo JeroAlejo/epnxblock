@@ -2,14 +2,16 @@
 
 from asyncio import log
 import importlib
+import importlib.resources
 from xblock.fields import Boolean
 import logging
-
-#Librerias propias de XBLOCK
+import json
 import pkg_resources
+#Librerias propias de XBLOCK
+
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock, XBlockAside
-from xblock.fields import Integer, Scope, String
+from xblock.fields import Integer, Scope, String, DateTime, Float
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +27,7 @@ class EpnXBlock(XBlock):
     #Campo para almacenar informacion: 
     titulo = String(
         help="Titulo de la arctividad",
-        default= "Actividad X",
+        default= "Sin asignar",
         scope = Scope.content
     )
 
@@ -41,9 +43,33 @@ class EpnXBlock(XBlock):
         scope= Scope.content
     )
 
+    fecha_entrega = String(
+        help="fecha de entrega de la actividad",
+        default="",
+        scope= Scope.content
+    )
+
     codigo_inicial = String(
         help="Se almacena el codigo incial brindado por el profesor - OPCIONAL",
         default= "Sin asignar",
+        scope= Scope.content
+    )
+
+    numero_pistas = Integer(
+        help="Almacena el numero de pistas permitidas",
+        default=5,
+        scope= Scope.content
+    )
+
+    grado = Float(
+        help="Almacena el grado de la IA",
+        default= 0,
+        scope= Scope.content
+    )
+
+    reduccion_nota = Float(
+        help="Almacena el valor para reducir los test cases",
+        default= 0,
         scope= Scope.content
     )
 
@@ -55,14 +81,13 @@ class EpnXBlock(XBlock):
         scope= Scope.content
     )
 
-    #Campos para la retroalimentacion
-    pistas = Integer(
-        help="Almacena el número de pistas que tiene disponible el estudiante",
-        default= 0,
-        scope= Scope.content
-    ) 
-
    
+    #Prueba de obtener informacion del curso
+    estudiante_id = String(
+        scope=Scope.user_state, help="ID del estudiante"
+        )
+    curso_id = String(scope=Scope.settings, help="ID del curso")
+    actividad_id = String(scope=Scope.settings, help="ID de la actividad")
 
     def resource_string(path):
         """Ayudante práctico para obtener recursos de nuestro kit."""
@@ -82,7 +107,7 @@ class EpnXBlock(XBlock):
         frag = Fragment(str(html).format(block=self))
 
         # Carga de archivos CSS y JavaScript fragments from within the package
-        css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock.css").read_text(encoding="utf-8")
+        css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock_student.css").read_text(encoding="utf-8")
         frag.add_css(str(css_str))
 
         js_str = importlib.resources.files(__package__).joinpath("static/js/src/epnxblock.js").read_text(encoding="utf-8")
@@ -100,7 +125,19 @@ class EpnXBlock(XBlock):
         #Carga de Fragmento HTML
         html_str = importlib.resources.files(__package__).joinpath("static/html/epnxblock-studio.html").read_text(encoding="utf-8")
         frag = Fragment(str(html_str).format(block=self))
-         # Carga de archivos CSS y JavaScript fragments from within the package
+
+        #CARGA DE ARCHIVO DE CONFIGURACION
+        resource_path = importlib.resources.files(__package__).joinpath('static/data/config_retro.json')
+        with open(resource_path, 'r', encoding='utf-8') as file:
+            config_retro = json.load(file)
+
+        #Pasar los datos al fragmento HTML
+        frag.add_content(
+            '<script type= "application/json" id= "checkbox-data">{}</script>'.format(json.dumps(config_retro))
+        )
+
+
+        # Carga de archivos CSS y JavaScript fragments from within the package
         css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock.css").read_text(encoding="utf-8")
         frag.add_css(str(css_str))
         js_str = importlib.resources.files(__package__).joinpath("static/js/src/epnxblock-studio.js").read_text(encoding="utf-8")
@@ -110,44 +147,31 @@ class EpnXBlock(XBlock):
         return frag
 
     #CONTROLADORES 
-    """
-    #Manejar solicitudes tipo JSON
-    @XBlock.json_handler
-    def vote(self,data,suffix=''):
-        
-        #Controlador que actualiza la votacion 
-        #self: instancia del XBlock actual 
-        #data: datos enviados desde el fontend como diccionario [voteType] : up o down
-        #suffix: Opcional
-        
-        if data['voteType'] not in ('up','down'):
-            log.error('error!')
-            return None
-        
-        if data['voteType'] == 'up':
-            self.upvotes +=1
-        else:
-            self.downvotes +=1
-        
-        self.voted = True
-
-        #Retorna un diccionario
-        return {'up': self.upvotes, 'down': self.downvotes}
-    """
 
     @XBlock.json_handler
     def guardar_configuracion(self, data, suffix=''):
+
+        # Imprimir los datos entrantes para verificar si son correctos
+        print(f"Datos recibidos: {data}")
         "Manejador que guarda las configuraciones del profesor en los campos"
         self.titulo = data.get('titulo')
         self.descripcion = data.get('descripcion')
-        self.salida_esperada = data.get('salida_esperada')
+        self.fecha_entrega = data.get('fecha_entrega')
+        self.numero_pistas = data.get("numero_pistas")
+        self.grado = data.get("grado")
+        self.reduccion_nota = data.get("reduccion_nota")
         self.codigo_inicial = data.get('codigo_inicial')
-        self.tipo = data.get('tipo')
-        self.pistas = data.get('pistas')
+       
+        #Ejemplo de prueba de conseguir atributos del curso 
+        """
+          self.estudiante_id = str(self.scope_ids.user_id) 
+        self.curso_id = str(self.runtime.course_id)  
+        self.actividad_id = str(self.scope_ids.usage_id)
+        """
         
         return {
             'result':'success',
-            'message':'Datos guardados correctament'
+            'message':'Datos guardados correctamente'
         }
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.

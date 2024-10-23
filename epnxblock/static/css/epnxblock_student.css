@@ -1,0 +1,62 @@
+html, body {
+    height: 100%;
+    background-color: #f0f8ff;
+}
+
+.t1{
+    margin-left: 2%;
+}
+
+.t3{
+  margin-left: 2%;
+}
+
+.flecha{
+    cursor: pointer;
+    font-size: 24px;
+    transition: transform 0.3s ease;
+}
+
+.rotate {
+    transform: rotate(180deg); /* Gira la flecha 180 grados */
+}
+
+.display_content{
+
+}
+
+/*Zona de codigo*/
+.zona_codigo{
+    
+    width: 80%;   /* Ancho del textarea */
+    height: 400px;  /* Altura del textarea */
+    resize: none;   /* Evita que el usuario cambie el tamaño del textarea */
+    padding: 10px;  /* Espacio interno */
+    border: 1px solid #000000;  /* Borde del textarea */
+    font-size: 16px;  /* Tamaño de la letra */
+    margin: 2%;
+}
+
+.ai_content{
+    display: flex;
+    width: 100%;
+}
+
+.ai_content_div{
+    width: 60%;
+}
+.ai_response{
+    width: 100%;   /* Ancho del textarea */
+    height: 200px;  /* Altura del textarea */
+    resize: none;   /* Evita que el usuario cambie el tamaño del textarea */
+    padding: 1%;  /* Espacio interno */
+    border: 1px solid #000000;  /* Borde del textarea */
+    font-size: 16px;  /* Tamaño de la letra */
+    margin: 2%;
+    border-radius: 25px;
+}
+
+.img_robot{
+   
+   width: 20%;
+}

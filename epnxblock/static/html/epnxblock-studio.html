@@ -1,54 +1,91 @@
-
-<div class="epn_xblock">
-    <div class="item">
-        <h1>Configuraciones Generales</h1>
+<html>
+    <body>
+        <header class="header">
+            <div class="titulo_h">
+                <h3>Configuración Generales</h3>
+            </div>
+            <div class="cont_nav">
+                <nav class="nav">
+                    <ul class="nav-links">
+                        <li><a href="#" id="nav-general">General</a></li>
+                        <li><a href="#" id="nav-retroalimentacion">Retroalimentación</a></li>
+                        <li><a href="#" id="nav-codigo">Código</a></li>
+                    </ul>            
+                </nav>
+            </div>
+        </header>
+        <!-- Secciones de contenido -->
+        <section id="general" class="contenido-seccion">
+            <div class="epn_xblock">
+                <div class="item">
+                    
+                    <label  for="titulo" ><h3 style="display: inline;" class="t3">Título:</h3></label>
+                    <input class="text_info" type="text" id="titulo" placeholder="Introduce el título">
+                        
+                    <label  for="descripcion"><h3 class="t3">Descripción:</h3></label>
+                    <textarea class="campos_info" id="descripcion" placeholder="Introduce la descripción" ></textarea>
+            
+                    <label  for="salida_esperada"><h3 class="t3">Salida esperada:</h3></label>
+                    <textarea class="campos_info" id="salida_esperada" placeholder="Introduce Salida esperada" ></textarea>
                 
-        <label class="labels" for="titulo" ><h3 style="display: inline;">Título:</h3></label>
-        <input type="text" id="titulo" placeholder="Introduce el título" style="width: 70%; padding: 8px; margin-bottom: 10px; display: inline-block;">
-            
-        <label for="descripcion"><h3 >Descripción:</h3></label>
-        <textarea class="campos_info" id="descripcion" placeholder="Introduce la descripción" ></textarea>
+                </div>
+                <div class="item">
+                    <label for="fecha_entrega"><h3  class="t3">Fecha de entrega:</h3></label>
+                    <input class="text_info" type="date" id="fecha_entrega">
 
-        <label for="salida_esperada"><h3>Salida esperada:</h3></label>
-        <textarea class="campos_info" id="salida_esperada" placeholder="Introduce Salida esperada" ></textarea>
-            
-        <label class="labels" for="cod_Inicial"><h3>Código Inicial:</h3></label>
-        <input type="checkbox" id="checkbox_cod" name="checkbox_cod" checked>
-        <label for="checkbox_cod"> Habilitado</label><br>
-
-        <textarea class="campos_info" id="codigo_inicial" placeholder="Introduce código Inicial" ></textarea>
-    
-    </div>
-    <div class="item_2">
-        <h1>Retroalimentación:</h1>
-
-
-        <label class="labels" for="titulo" ><h3 style="display: inline;">Tipo:</h3></label>
-        <select id="tipo_ejercicio">
-            <option>
-                <option value="calificacion" >Calificación</option>
-                <option value="retroalimentacion">Retroalimentación</option>
-            </option>
-        </select>
-
-        <!-- Elementos que serán mostrados/ocultados -->
-         <div class="cont_select">
-            <div id="calificacion">
-                <h4>Calificación:</h4>
-                <p>Este es el contenido para la opción de Calificación.</p>
+                </div>
+                
             </div>
-    
-            <div id="retroalimentacion">
-                <label class="labels" for="pistas" ><h3 style="display: inline;">Número de Pistas:</h3></label>
-                <input type="number" id="pistas" value="1">
-                <p>Este es el contenido para la opción de Retroalimentación.</p>
+            
+        </section>
+
+        <section id="retroalimentacion" class="contenido-seccion" style="display:none;">
+            <div class="epn_xblock2">
+
+                <div class="checkbox_container" id="checkbox-container">
+                     
+                    <h3 class="t3">Selecione el tipo de evaluación:</h3>
+                    <!-- Aquí se generarán los checkboxes dinámicamente -->
+                </div>
+                <div>
+                    <h3 class="t3">Configuración de retroalimentación</h3>
+                    
+                </div>
+                
+                <div class="confing_selected" id="confing-selected">
+                    
+                    <!-- Aquí se generarán los parametros dinámicamente -->
+                </div>
+                
             </div>
-         </div>
+            
+        </section>
+
+        <section id="codigo" class="contenido-seccion" style="display:none;">
+            <div class="epn_xblock">
+                <div class="item">
+                    <h3 class="t3"> Código incial (opcional):</h3>
+                    <textarea class="text_num" cols="1" rows="25" readonly></textarea>
+                    <textarea class="text_code" id="codigo_inicial" cols="70" rows="25"></textarea>
+                </div>
+                
+                <div class="item">
+                    <h3 class="t3">Test Cases:</h3>
+                    <textarea class="text_code" id="test_cases"></textarea>
+                </div>
+
+            </div>
+            
+        </section>
+
+        <div>
+            <button class="updateButton">Guardar</button>
         
-    </div>
-    
-</div>
-<div>
-    <button class="updateButton">Guardar</button>
+        </div>
 
-</div>
+    </body>
+
+</html>
+
+
+

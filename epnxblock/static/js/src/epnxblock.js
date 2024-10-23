@@ -50,6 +50,11 @@ function EpnXBlock(runtime, element, init_args) {
 
 function EpnXBlock(runtime, element, init_args) {
 
+  $(element).find(".flecha").click(function(){
+    console.log("Fecha presionada");
+    element.toggleClass("rotate");
+  });
+
   console.log("TODO ESTA BIEN");
   return{};
 };

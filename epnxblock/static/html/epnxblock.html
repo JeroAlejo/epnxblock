@@ -1,25 +1,41 @@
+<html>
+    <body>
+        <h1 class="t1">Actividad Asignada: {block.titulo}</h1>
+        <h3 class="t3">Descripción: <span class="flecha">&#9660;</span></h3>
+        
+        
+        <div class="display_content">
+            <p class="t3">{block.descripcion}</p>
+            
+        </div>
+        <div class="code_content">
+            <h4 class="t3">Código</h4>
+            <textarea class="zona_codigo" name="zona_codigo" id="zona_codigo">{block.codigo_inicial}</textarea>
+            
+        </div>
+        <div class="retro_content">
+            <h4 class="t3">Esquema de evaluación:</h4>
 
+            <p class="t3">Número de pistas permitidas: {block.numero_pistas}</p>
+            <p class="t3">Grado: {block.grado}</p>
+
+            <div class="ai_content">
+                <div class="img_robot">
+                   
+                </div>
+                <div class="ai_content_div">
+                    <textarea class="ai_response" name="ai_response" id=""></textarea>
+
+                </div>
+            </div>
+    
+            <button>Subir Código</button>
+
+        </div>
+    </div>
+
+    </body>
+</html>
 <div >
     
-    <h1>Actividad Asignada</h1>
-    <div>
-        <h3>{block.titulo}</h3>
-    </div>
-    <div>
-        <label>Descripción: {block.descripcion}</label>
-    </div>
-    <div>
-        <p>Salida esperada: {block.salida_esperada}</p>
-    </div>
-    <div>
-        <textarea name="zona_codigo" id="zona_codigo">{block.codigo_inicial}</textarea>
-    </div>
-    <div>
-        <h2>Informacion de Retroalimentación:</h2>
-        <p>Tipo: {block.tipo}</p>
-        <p>Pistas Permitidas: {block.pistas}</p>
 
-        <button>Subir Código</button>
-
-    </div>
-</div>

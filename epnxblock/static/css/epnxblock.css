@@ -1,29 +1,170 @@
+
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    font-size: 20px;
+}
+/*Estilos para barra de navegacion */
+body{
+    background-color: #B8CCD6;
+}
+
+.header{
+    display: flex;
+    align-items: center;
+    background-color: rgb(191, 188, 199);
+}
+
+.titulo_h{
+    flex: 1;
+    background-color: #9bc3eb;
+    text-align: center;
+    padding: 1%;
+}
+.cont_nav{
+    flex: 2;
+    padding: 1%;
+}
+
+.nav{
+    text-align: center;
+}
+
+.nav-links{
+    list-style: none;
+    display: flex;
+}
+li{
+    margin-left: 10%;
+    margin-right: 10%;
+    
+}
+
+.nav-links li a{
+    text-decoration: none;
+    color: #000000;
+    transition: background-color 0.3s ease;
+    
+}
+
+.nav-links li a:hover{
+    background-color: #ffbc0e;
+    color: white;
+    border-radius: 5px;
+    padding: 10%;
+}
+
+
+/*Campo General*/
 .epn_xblock{
     display: flex;
-    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: space-between;
+    background-color: floralwhite;
 }
 
 .item{
     flex-grow: 1;
-    background-color: rgb(177, 237, 248);
+    padding-top: 2%;
 }
 
 .item_2{
     flex-grow: 1;
+    padding-top: 2%;
     background-color: rgb(223, 192, 192);
 }
-
+.text_info{
+    width: 70%; 
+    padding: 1%; 
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+    font-size: 16px;
+}
 .campos_info{
     
-    width: 80%;
-    padding: 8px;
-    margin-bottom: 10px;
+    width: 80%;   /* Ancho del textarea */
+    height: 300px;  /* Altura del textarea */
+    resize: none;   /* Evita que el usuario cambie el tamaño del textarea */
+    padding: 10px;  /* Espacio interno */
+    border: 1px solid #000000;  /* Borde del textarea */
+    font-size: 16px;  /* Tamaño de la letra */
+    margin: 2%;
 }
-.labels{
-    display: inline-block; 
-    margin-right: 10px;
+
+.t3{
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
 }
+
+/*Campo Retroalimentación*/
+.epn_xblock2{
+    display:block;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: floralwhite;
+    height: 90%;
+}
+
+.checkbox_container{
+    flex-grow: 1;
+    padding-top: 2%;
+}
+
+.checkbox_unit{
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+    font-size: 16px;
+}
+
+.confing_selected{
+    margin-top: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
+    font-size: 16px;
+}
+.config_unit{
+    margin-bottom: 2%;
+    display: none;
+}
+
+.t2{
+    border-color: #000000;
+    border: solid;
+    width: 50%;
+    padding: 0.5%;
+    margin-bottom: 2%;
+}
+
+.number{
+    text-align: center;
+    width: 10%;
+}
+/*Campo codigo*/
+.text_code{
+    font-family: 'Courier New', Courier, monospace;
+    width: 80%;   /* Ancho del textarea */
+    height: 500px;  /* Altura del textarea */
+    resize: none;   /* Evita que el usuario cambie el tamaño del textarea */
+    padding: 10px;  /* Espacio interno */
+    border: 1px solid #000000;  /* Borde del textarea */
+    font-size: 16px;  /* Tamaño de la letra */
+    margin-top: 1%;
+}
+.text_num{
+    margin-left: 2%;
+    margin-top: 1%;
+    resize: none;
+    height: 500px;
+}
+
+/*NO USADO*/
+
 .cont_select{
     position: relative;
 }
