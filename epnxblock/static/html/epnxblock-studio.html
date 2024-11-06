@@ -1,4 +1,7 @@
 <html>
+    <head>
+       
+    </head>
     <body>
         <header class="header">
             <div class="titulo_h">
@@ -7,9 +10,9 @@
             <div class="cont_nav">
                 <nav class="nav">
                     <ul class="nav-links">
-                        <li><a href="#" id="nav-general">General</a></li>
-                        <li><a href="#" id="nav-retroalimentacion">Retroalimentación</a></li>
-                        <li><a href="#" id="nav-codigo">Código</a></li>
+                        <li class="link"><a href="#" id="nav-general">General</a></li>
+                        <li class="link"><a href="#" id="nav-retroalimentacion">Retroalimentación</a></li>
+                        <li class="link"><a href="#" id="nav-codigo">Código</a></li>
                     </ul>            
                 </nav>
             </div>
@@ -20,21 +23,24 @@
                 <div class="item">
                     
                     <label  for="titulo" ><h3 style="display: inline;" class="t3">Título:</h3></label>
-                    <input class="text_info" type="text" id="titulo" placeholder="Introduce el título">
-                        
-                    <label  for="descripcion"><h3 class="t3">Descripción:</h3></label>
-                    <textarea class="campos_info" id="descripcion" placeholder="Introduce la descripción" ></textarea>
-            
-                    <label  for="salida_esperada"><h3 class="t3">Salida esperada:</h3></label>
-                    <textarea class="campos_info" id="salida_esperada" placeholder="Introduce Salida esperada" ></textarea>
-                
-                </div>
-                <div class="item">
+                    <input class="text_info" type="text" id="titulo" placeholder= "Ingrese titulo de la actividad" value="{block.titulo}">
+
                     <label for="fecha_entrega"><h3  class="t3">Fecha de entrega:</h3></label>
-                    <input class="text_info" type="date" id="fecha_entrega">
+                    <input  class="text_info" type="date" id="fecha_entrega" value="{block.fecha_entrega}">
+                        
+                    <label ><h3 class="t3">Descripción:</h3></label>
+                   
+                    <!-- Enlace a Quill CSS -->
+                    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+                    <!-- Contenedor del editor de Quill -->
+                    <div id="editor-container" style="height: 500px; margin-left:2% ; width:80%">
+                        {block.descripcion}
+                       
+                    </div>
+                    <!-- Enlace a Quill JS -->
+                     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
 
                 </div>
-                
             </div>
             
         </section>

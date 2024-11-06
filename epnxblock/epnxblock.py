@@ -3,6 +3,7 @@
 from asyncio import log
 import importlib
 import importlib.resources
+from typing import Dict
 from xblock.fields import Boolean
 import logging
 import json
@@ -11,7 +12,7 @@ import pkg_resources
 
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock, XBlockAside
-from xblock.fields import Integer, Scope, String, DateTime, Float
+from xblock.fields import Integer, Scope, String, Dict, Float
 
 log = logging.getLogger(__name__)
 
@@ -24,23 +25,18 @@ class EpnXBlock(XBlock):
     # self.<fieldname>(Campo).
 
 
-    #Campo para almacenar informacion: 
+    #Campo para almacenar informacion GENERAL -----------------------------------------# 
+    #Caracter Obligatorio
     titulo = String(
         help="Titulo de la arctividad",
-        default= "Sin asignar",
+        default= "",
         scope = Scope.content
     )
 
     descripcion = String(
         help="Descripcion de la arctividad",
-        default="Sin asignar",
+        default="",
         scope = Scope.content
-    )
-
-    salida_esperada = String(
-        help="Se almacena la salida que debe tener el programa",
-        default= "Sin asignar",
-        scope= Scope.content
     )
 
     fecha_entrega = String(
@@ -49,39 +45,41 @@ class EpnXBlock(XBlock):
         scope= Scope.content
     )
 
+    #Campos para retroalimentacion ------------------------------------------------------#
+
+    #Campo bandera tipo diccionario para cada retroalimentacion para mostar al estudiante
+    field_Pista = Dict(
+        default={"label":"Pista", "numero_pistas": 0,"grado": 0, "state": 0},
+        scope = Scope.settings
+    )
+
+    field_Calificado = Dict(
+        default={"label":"Calificado", "reduccion_nota": 0, "state": 0},
+        scope = Scope.settings
+    )
+    
+    #Campos para Codigo -----------------------------------------------------------------#
+
     codigo_inicial = String(
         help="Se almacena el codigo incial brindado por el profesor - OPCIONAL",
         default= "Sin asignar",
         scope= Scope.content
     )
 
-    numero_pistas = Integer(
-        help="Almacena el numero de pistas permitidas",
-        default=5,
+    test_cases = String(
+        help="Se almacena el codigo incial brindado por el profesor - OPCIONAL",
+        default= "Sin asignar",
         scope= Scope.content
     )
 
-    grado = Float(
-        help="Almacena el grado de la IA",
-        default= 0,
+
+    #Campo del profesor: 
+    codigo_estudiante = String(
+        help="Se almacena el codigo del estudiante para hacer la peticion a la IA",
+        default= "",
         scope= Scope.content
     )
 
-    reduccion_nota = Float(
-        help="Almacena el valor para reducir los test cases",
-        default= 0,
-        scope= Scope.content
-    )
-
-    #Campo bandera que determina que retroalimentacion se utiliza
-
-    tipo = String(
-        help="En el se especifica que tipo de retroalimentacion escoge el profesor - OBLIGATORIA",
-        default= None,
-        scope= Scope.content
-    )
-
-   
     #Prueba de obtener informacion del curso
     estudiante_id = String(
         scope=Scope.user_state, help="ID del estudiante"
@@ -140,8 +138,16 @@ class EpnXBlock(XBlock):
         # Carga de archivos CSS y JavaScript fragments from within the package
         css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock.css").read_text(encoding="utf-8")
         frag.add_css(str(css_str))
+
+
+        #Carga de archivos JS
         js_str = importlib.resources.files(__package__).joinpath("static/js/src/epnxblock-studio.js").read_text(encoding="utf-8")
         frag.add_javascript(str(js_str))
+
+
+        # Carga de Quill CSS y JS
+        js_quill = importlib.resources.files(__package__).joinpath("static/js/src/quill.js").read_text(encoding="utf-8")
+        frag.add_javascript(str(js_quill))
         frag.initialize_js('EpnXBlockStudio')
 
         return frag
@@ -153,14 +159,14 @@ class EpnXBlock(XBlock):
 
         # Imprimir los datos entrantes para verificar si son correctos
         print(f"Datos recibidos: {data}")
-        "Manejador que guarda las configuraciones del profesor en los campos"
+        "Manejador que guarda las configuraciones del profesor en los campos GENERAL"
         self.titulo = data.get('titulo')
         self.descripcion = data.get('descripcion')
         self.fecha_entrega = data.get('fecha_entrega')
-        self.numero_pistas = data.get("numero_pistas")
-        self.grado = data.get("grado")
-        self.reduccion_nota = data.get("reduccion_nota")
+        #Codigo
         self.codigo_inicial = data.get('codigo_inicial')
+        self.test_cases = data.get('test_cases')
+        
        
         #Ejemplo de prueba de conseguir atributos del curso 
         """
@@ -168,11 +174,46 @@ class EpnXBlock(XBlock):
         self.curso_id = str(self.runtime.course_id)  
         self.actividad_id = str(self.scope_ids.usage_id)
         """
+
+        #Guardar JSON en archivo de configuracion y guardar variables clave en Campos 
+
+        new_config_retro = data.get('retro',{})
+
+        for item in new_config_retro.get('retroalimentacion',[]):
+            if item.get('name') == 'Pistas':
+                self.field_Pista['numero_pistas'] = item['parameters']['numero_pistas']['value']
+                self.field_Pista['grado'] = item['parameters']['grado']['value']
+                self.field_Pista['state'] = item['state']
+
+        #Ruta de archivo de configuracion
+        resource_path = importlib.resources.files(__package__).joinpath('static/data/config_retro.json')
+
+        #Guardado de archivo de configuracion 
+        try:
+            with open(resource_path, "w", encoding='utf-8') as file:
+                json.dump(new_config_retro,file,indent=4)
+            return{"result":"success"}
         
+        except Exception as e: 
+            return {"result": "error","message": str(e)}
+
+      
+    
+    #Controlador para envio del codigo del estudiante 
+    @XBlock.json_handler
+    def envio_respuesta(self, data, suffix=''):
+        
+        #Guardar el codigo del estudiante
+        self.codigo_estudiante = data.get('codigo_estudiante')
+        #Reduccion de numero de pistas 
+        self.numero_pistas = self.numero_pistas -1
+        print(self.numero_pistas)
         return {
-            'result':'success',
-            'message':'Datos guardados correctamente'
+        'result': 'success',
+        'message': 'Codigo del estudiante guardado correctamente'
         }
+    
+
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.
     @staticmethod

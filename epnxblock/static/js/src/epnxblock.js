@@ -10,6 +10,7 @@ function EpnXBlockAside(runtime, element, block_element, init_args) {
   return new EpnXBlock(runtime, element, init_args)
   //return new ThumbsBlock();
 }
+
 /*
 function EpnXBlock(runtime, element, init_args) {
   //Funcion interna: Actualiza el contador de votos en la interfaz 
@@ -25,15 +26,7 @@ function EpnXBlock(runtime, element, init_args) {
   var handlerUrl = runtime.handlerUrl(element, 'vote');
 
   //Evento de clic para upvote (span)
-  //Solicitud ajax al backend 
-  $('.upvote', element).click(function(eventObject) {
-      $.ajax({
-          type: "POST",                                 //Solcitud POST
-          url: handlerUrl,                              //Uso de la URL generada 
-          data: JSON.stringify({voteType: 'up'}),       //Envio de un Objeto JSON con el tipo de voto en caso up
-          success: updateVotes                          //si la solcitud es exitosa, ejecuta la funcion updateVotes
-      });
-  });
+  
 
   $('.downvote', element).click(function(eventObject) {
       $.ajax({
@@ -55,7 +48,31 @@ function EpnXBlock(runtime, element, init_args) {
     element.toggleClass("rotate");
   });
 
-  console.log("TODO ESTA BIEN");
+  //Funciones complementarias 
+  function actualizar_campos(){
+    console.log('Actualiza campos: PENDIENTE');
+  };
+
+
+  //Solicitud ajax para enviar el codigo del estudiante 
+  const handlerUrl = runtime.handlerUrl(element,'envio_respuesta'); //Nombre del controlador en pyhton
+    $(element).find("#test_code").click(function(){
+
+      const data ={
+        codigo_estudiante: document.getElementById('zona_codigo').value
+      }
+      $.ajax({
+        type: "POST",                                 //Solcitud POST
+        url: handlerUrl,                              //Uso de la URL generada 
+        data: JSON.stringify(data),                   //Envio de un Objeto JSON con los datos
+        success: actualizar_campos                    //si la solcitud es exitosa, ejecuta la funcion 
+    });
+
+    });
+  
+
+
+  
   return{};
 };
 
