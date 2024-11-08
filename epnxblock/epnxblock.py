@@ -206,8 +206,11 @@ class EpnXBlock(XBlock):
         #Guardar el codigo del estudiante
         self.codigo_estudiante = data.get('codigo_estudiante')
         #Reduccion de numero de pistas 
-        self.numero_pistas = self.numero_pistas -1
-        print(self.numero_pistas)
+        """
+            self.numero_pistas = self.numero_pistas -1
+            print(self.numero_pistas)
+        """
+       
         return {
         'result': 'success',
         'message': 'Codigo del estudiante guardado correctamente'
