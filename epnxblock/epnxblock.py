@@ -114,40 +114,40 @@ class EpnXBlock(XBlock):
 
         return frag
 
-    #Vista de profesor: En el boton EDIT
+    #Vista del PROFESOR que se utiliza para la configuracion de los parametros de la Actividad 
     def studio_view(self, context = None):
-        """
-        La vista principal de EpnXBlock, que se muestra a los estudiantes
-        cuando visualizan cursos.
-        """
+      
         #Carga de Fragmento HTML
         html_str = importlib.resources.files(__package__).joinpath("static/html/epnxblock-studio.html").read_text(encoding="utf-8")
         frag = Fragment(str(html_str).format(block=self))
 
-        #CARGA DE ARCHIVO DE CONFIGURACION
+        #CARGA DE ARCHIVO DE CONFIGURACION JSON 
         resource_path = importlib.resources.files(__package__).joinpath('static/data/config_retro.json')
         with open(resource_path, 'r', encoding='utf-8') as file:
             config_retro = json.load(file)
 
-        #Pasar los datos al fragmento HTML
+        #Pasar los datos JSON al fragmento HTML
         frag.add_content(
             '<script type= "application/json" id= "checkbox-data">{}</script>'.format(json.dumps(config_retro))
         )
 
+        #Carga de Quill desde la CDN CSS Y JS
+        frag.add_css_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css")
+        frag.add_javascript_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js")
 
-        # Carga de archivos CSS y JavaScript fragments from within the package
+        # Carga de archivos CSS y JavaScript 
         css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock.css").read_text(encoding="utf-8")
         frag.add_css(str(css_str))
 
-
-        #Carga de archivos JS
         js_str = importlib.resources.files(__package__).joinpath("static/js/src/epnxblock-studio.js").read_text(encoding="utf-8")
         frag.add_javascript(str(js_str))
 
 
-        # Carga de Quill CSS y JS
+        # Carga de archivo personalizado quill.js que cintrola la instacia de Quill
         js_quill = importlib.resources.files(__package__).joinpath("static/js/src/quill.js").read_text(encoding="utf-8")
         frag.add_javascript(str(js_quill))
+
+        # Inicializar el JavaScript del XBlock
         frag.initialize_js('EpnXBlockStudio')
 
         return frag
