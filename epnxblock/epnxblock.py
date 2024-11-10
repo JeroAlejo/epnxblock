@@ -131,6 +131,21 @@ class EpnXBlock(XBlock):
             '<script type= "application/json" id= "checkbox-data">{}</script>'.format(json.dumps(config_retro))
         )
 
+        frag.add_content("""
+        <!-- Incluir los archivos de Quill -->
+        <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+        
+        <!-- Script para inicializar Quill -->
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            const quill = new Quill('#editor', {
+              theme: 'snow'
+            });
+          });
+        </script>
+    """)
+
         #Carga de Quill desde la CDN CSS Y JS
         #frag.add_css_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css")
         #frag.add_javascript_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js")

@@ -1,32 +1,8 @@
 //Archivo JS para el EPNXBLOCK en STUDIO
-function loadQuillResources(config) {
-  // Cargar CSS de Quill
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = config.quillCssUrl;
-  document.head.appendChild(link);
 
-  // Cargar JavaScript de Quill
-  const script = document.createElement("script");
-  script.src = config.quillJsUrl;
-  script.onload = function() {
-      initializeQuillEditor();
-  };
-  document.head.appendChild(script);
-}
-
-function initializeQuillEditor() {
-  if (typeof Quill !== 'undefined') {
-      const quill = new Quill('#editor', {
-          theme: 'snow'
-      });
-  } else {
-      console.error("Failed to load Quill.");
-  }
-}
 
 function EpnXBlockStudio(runtime, element, data){
-  loadQuillResources(data);
+
 /*
   const toolbarOptions = [
     [{ font: [] }],
