@@ -136,7 +136,7 @@ class EpnXBlock(XBlock):
         <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
         
-    """)
+        """)
 
         #Carga de Quill desde la CDN CSS Y JS
         #frag.add_css_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css")
