@@ -132,8 +132,8 @@ class EpnXBlock(XBlock):
         )
 
         #Carga de Quill desde la CDN CSS Y JS
-        frag.add_css_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css")
-        frag.add_javascript_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js")
+        #frag.add_css_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css")
+        #frag.add_javascript_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js")
 
         # Carga de archivo CSS 
         css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock.css").read_text(encoding="utf-8")
@@ -148,7 +148,10 @@ class EpnXBlock(XBlock):
         
 
         # Inicializar el JavaScript del XBlock
-        frag.initialize_js('EpnXBlockStudio')
+        frag.initialize_js('EpnXBlockStudio', {
+            'quillJsUrl': 'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js',
+            'quillCssUrl': 'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css'
+        })
 
         return frag
 
