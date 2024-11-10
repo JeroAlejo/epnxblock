@@ -135,17 +135,17 @@ class EpnXBlock(XBlock):
         frag.add_css_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css")
         frag.add_javascript_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js")
 
-        # Carga de archivos CSS y JavaScript 
+        # Carga de archivo CSS 
         css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock.css").read_text(encoding="utf-8")
         frag.add_css(str(css_str))
 
+        #Carga de archivo JS para Studio (EpnXBlockStudio)
         js_str = importlib.resources.files(__package__).joinpath("static/js/src/epnxblock-studio.js").read_text(encoding="utf-8")
         frag.add_javascript(str(js_str))
 
 
-        # Carga de archivo personalizado quill.js que cintrola la instacia de Quill
-        js_quill = importlib.resources.files(__package__).joinpath("static/js/src/quill.js").read_text(encoding="utf-8")
-        frag.add_javascript(str(js_quill))
+        # Carga de archivo personalizado quill.js que cintrola la instacia de Quill --Eliminado 
+        
 
         # Inicializar el JavaScript del XBlock
         frag.initialize_js('EpnXBlockStudio')

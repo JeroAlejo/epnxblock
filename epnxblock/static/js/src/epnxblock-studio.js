@@ -3,6 +3,25 @@
 function EpnXBlockStudio(runtime, element, data){
 
 
+  const toolbarOptions = [
+    [{ font: [] }],
+    [{ header: [1, 2, 3] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ color: [] }, { background: [] }],
+    [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+    ["blockquote", "code-block"],
+    [{ align: [] }],
+ ];
+
+ // Initialize Quill editor
+ const quill = new Quill("#editor-container", {
+  theme: "snow",
+  modules: {
+      toolbar: toolbarOptions,
+  },
+});
+
+
    //Obtener JSON para los tipos de retroalimentacion y sus parametros
    const retro_Data = JSON.parse($(element).find("#checkbox-data").text());
   
