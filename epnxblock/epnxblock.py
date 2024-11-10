@@ -136,14 +136,6 @@ class EpnXBlock(XBlock):
         <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
         
-        <!-- Script para inicializar Quill -->
-        <script>
-          document.addEventListener("DOMContentLoaded", function () {
-            const quill = new Quill('#editor', {
-              theme: 'snow'
-            });
-          });
-        </script>
     """)
 
         #Carga de Quill desde la CDN CSS Y JS

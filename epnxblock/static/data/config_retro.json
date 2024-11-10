@@ -2,7 +2,7 @@
     "retroalimentacion": [
         {
             "name": "Pistas",
-            "state": 0,
+            "state": 1,
             "parameters": {
                 "numero_pistas": {
                     "id": "numero_pistas",
