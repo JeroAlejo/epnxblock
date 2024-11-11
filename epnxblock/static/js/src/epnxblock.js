@@ -49,8 +49,10 @@ function EpnXBlock(runtime, element, init_args) {
   });
 
   //Funciones complementarias 
-  function actualizar_campos(){
-    console.log('Actualiza campos: PENDIENTE');
+  function actualizar_campos(response){
+    $('.ai_response',element).text(response.ia_response);
+    $('.pista_r',element).text(response.pistas_restantes)
+    console.log('Actualizacion realizada');
   };
 
 
@@ -58,6 +60,7 @@ function EpnXBlock(runtime, element, init_args) {
   const handlerUrl = runtime.handlerUrl(element,'envio_respuesta'); //Nombre del controlador en pyhton
     $(element).find("#test_code").click(function(){
 
+      
       const data ={
         codigo_estudiante: document.getElementById('zona_codigo').value
       }
@@ -67,6 +70,7 @@ function EpnXBlock(runtime, element, init_args) {
         data: JSON.stringify(data),                   //Envio de un Objeto JSON con los datos
         success: actualizar_campos                    //si la solcitud es exitosa, ejecuta la funcion 
     });
+    
 
     });
   

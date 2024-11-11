@@ -2,14 +2,15 @@
 
 
 function EpnXBlockStudio(runtime, element, data){
-   var quill; //Variable global
-
+  
+ 
+  /*
   $(document).ready(function() {
     quill = new Quill('#editor', {
         theme: 'snow'
     });
   });
-
+  */
 
    //Obtener JSON para los tipos de retroalimentacion y sus parametros
    const retro_Data = JSON.parse($(element).find("#checkbox-data").text());

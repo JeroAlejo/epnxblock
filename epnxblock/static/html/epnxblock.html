@@ -1,23 +1,21 @@
 <html>
     <body>
-        <h1 class="t1">Actividad Asignada: {block.titulo}</h1>
+        <h2 class="t1">Actividad Asignada: {block.titulo}</h2>
+        <p class="t1">Fecha de entrega: {block.fecha_entrega}</p>
         <h3 class="t3">Descripción: <span class="flecha">&#9660;</span></h3>
-        
         
         <div class="display_content">
             <p class="t3">{block.descripcion}</p>
             
         </div>
         <div class="code_content">
-            <h4 class="t3">Código</h4>
+            <h3 class="t3">Código</h3>
             <textarea class="zona_codigo" name="zona_codigo" id="zona_codigo">{block.codigo_inicial}</textarea>
             
         </div>
         <div class="retro_content">
-            <h4 class="t3">Esquema de evaluación:</h4>
-
-            <p class="t3">Número de pistas permitidas: </p>
-            <p class="t3">Grado: </p>
+            <h3 class="t3">Esquema de evaluación:</h3>
+            {evaluacion_html}
 
             <div class="ai_content">
                 <div class="img_robot">
@@ -25,7 +23,7 @@
                 </div>
                 <div class="ai_content_div">
                     <textarea class="ai_response" name="ai_response" id=""></textarea>
-
+                    <span class="pista_r"></span>
                 </div>
             </div>
     

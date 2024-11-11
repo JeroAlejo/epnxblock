@@ -22,19 +22,22 @@ html, body {
 }
 
 .display_content{
-
+ margin-left: 2%;
+ border: solid;
+ padding: 1%;
 }
 
 /*Zona de codigo*/
 .zona_codigo{
     
-    width: 80%;   /* Ancho del textarea */
+    width: 95%;   /* Ancho del textarea */
     height: 400px;  /* Altura del textarea */
     resize: none;   /* Evita que el usuario cambie el tamaño del textarea */
     padding: 10px;  /* Espacio interno */
     border: 1px solid #000000;  /* Borde del textarea */
     font-size: 16px;  /* Tamaño de la letra */
-    margin: 2%;
+    margin-left: 2%;
+    margin-right: 2%;
 }
 
 .ai_content{

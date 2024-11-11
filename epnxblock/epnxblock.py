@@ -99,10 +99,35 @@ class EpnXBlock(XBlock):
         """
         La vista principal de EpnXBlock, que se muestra a los estudiantes
         """
+
+        # Construir la sección de evaluación condicionalmente
+        evaluacion_html = ""
+        if self.field_Pista["state"] == 1 and self.field_Calificado["state"] == 1:
+            evaluacion_html = (
+            f'<p class="t3">Tipo de Evaluación: {self.field_Pista["label"]}</p>'
+            f'<p class="t3">Número de pistas permitidas: {self.field_Pista["numero_pistas"]}</p>'
+            f'<p class="t3">Tipo de Evaluación: {self.field_Calificado["label"]}</p>'
+        )
+        elif self.field_Pista["state"] == 1:
+            evaluacion_html = (
+            f'<p class="t3">Tipo de Evaluación: {self.field_Pista["label"]}</p>'
+            f'<p class="t3">Número de pistas permitidas: {self.field_Pista["numero_pistas"]}</p>'
+        )
+        elif self.field_Calificado["state"] == 1:
+            evaluacion_html = (
+            f'<p class="t3">Tipo de Evaluación: {self.field_Calificado["label"]}</p>'
+        )
+        else:
+            evaluacion_html = '<p class="t3">Aún no se ha asignado ningún esquema de evaluación.</p>'
         
         #Carga de Fragmento HTML
         html = importlib.resources.files(__package__).joinpath("static/html/epnxblock.html").read_text(encoding="utf-8")
-        frag = Fragment(str(html).format(block=self))
+        # Insertar los valores en el HTML
+        html = html.format(
+            block=self,
+            evaluacion_html=evaluacion_html
+        )
+        frag = Fragment(html)
 
         # Carga de archivos CSS y JavaScript fragments from within the package
         css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock_student.css").read_text(encoding="utf-8")
@@ -131,16 +156,22 @@ class EpnXBlock(XBlock):
             '<script type= "application/json" id= "checkbox-data">{}</script>'.format(json.dumps(config_retro))
         )
 
+         #Carga de Quill desde la CDN CSS Y JS
         frag.add_content("""
-        <!-- Incluir los archivos de Quill -->
+         <!-- Incluir los archivos de Quill -->
         <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
         
+        <!-- Script para inicializar Quill -->
+        <script>
+          var quill;
+          document.addEventListener("DOMContentLoaded", function () {
+            quill = new Quill('#editor', {
+              theme: 'snow'
+            });
+          });
+        </script>             
         """)
-
-        #Carga de Quill desde la CDN CSS Y JS
-        #frag.add_css_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css")
-        #frag.add_javascript_url("https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js")
 
         # Carga de archivo CSS 
         css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock.css").read_text(encoding="utf-8")
@@ -149,10 +180,6 @@ class EpnXBlock(XBlock):
         #Carga de archivo JS para Studio (EpnXBlockStudio)
         js_str = importlib.resources.files(__package__).joinpath("static/js/src/epnxblock-studio.js").read_text(encoding="utf-8")
         frag.add_javascript(str(js_str))
-
-
-        # Carga de archivo personalizado quill.js que cintrola la instacia de Quill --Eliminado 
-        
 
         # Inicializar el JavaScript del XBlock
         frag.initialize_js('EpnXBlockStudio', {
@@ -216,14 +243,12 @@ class EpnXBlock(XBlock):
         #Guardar el codigo del estudiante
         self.codigo_estudiante = data.get('codigo_estudiante')
         #Reduccion de numero de pistas 
-        """
-            self.numero_pistas = self.numero_pistas -1
-            print(self.numero_pistas)
-        """
-       
+        
+        self.field_Pista["numero_pistas"] =  self.field_Pista["numero_pistas"]-1
+        
         return {
-        'result': 'success',
-        'message': 'Codigo del estudiante guardado correctamente'
+        "ia_response": "La respuesta de la IA es: ......",
+        "pistas_restantes":  self.field_Pista["numero_pistas"]
         }
     
 
