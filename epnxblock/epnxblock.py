@@ -1,6 +1,5 @@
 """TO-DO: Write a description of what this XBlock is."""
 
-from asyncio import log
 import importlib
 import importlib.resources
 from typing import Dict
@@ -49,12 +48,13 @@ class EpnXBlock(XBlock):
 
     #Campo bandera tipo diccionario para cada retroalimentacion para mostar al estudiante
     field_Pista = Dict(
-        default={"label":"Pista", "numero_pistas": 0,"grado": 0, "state": 0},
+        default={"label":"Pista", "numero_pistas": 1,"grado": 0, "state": 0},
         scope = Scope.settings
     )
 
+
     field_Calificado = Dict(
-        default={"label":"Calificado", "reduccion_nota": 0, "state": 0},
+        default={"label":"Calificado", "reduccion_nota": 0, "state": 1},
         scope = Scope.settings
     )
     
@@ -100,32 +100,16 @@ class EpnXBlock(XBlock):
         La vista principal de EpnXBlock, que se muestra a los estudiantes
         """
 
-        # Construir la sección de evaluación condicionalmente
-        evaluacion_html = ""
-        if self.field_Pista["state"] == 1 and self.field_Calificado["state"] == 1:
-            evaluacion_html = (
-            f'<p class="t3">Tipo de Evaluación: {self.field_Pista["label"]}</p>'
-            f'<p class="t3">Número de pistas permitidas: {self.field_Pista["numero_pistas"]}</p>'
-            f'<p class="t3">Tipo de Evaluación: {self.field_Calificado["label"]}</p>'
-        )
-        elif self.field_Pista["state"] == 1:
-            evaluacion_html = (
-            f'<p class="t3">Tipo de Evaluación: {self.field_Pista["label"]}</p>'
-            f'<p class="t3">Número de pistas permitidas: {self.field_Pista["numero_pistas"]}</p>'
-        )
-        elif self.field_Calificado["state"] == 1:
-            evaluacion_html = (
-            f'<p class="t3">Tipo de Evaluación: {self.field_Calificado["label"]}</p>'
-        )
-        else:
-            evaluacion_html = '<p class="t3">Aún no se ha asignado ningún esquema de evaluación.</p>'
+        data = {"eva":[{ "Pista": {"label": self.field_Pista["label"], "state": self.field_Pista["state"], "numero_pistas": self.field_Pista["numero_pistas"]}},
+        {"Calificado": {"label":self.field_Calificado["label"] ,"stade": self.field_Calificado["state"] }}]}
+
+        
         
         #Carga de Fragmento HTML
         html = importlib.resources.files(__package__).joinpath("static/html/epnxblock.html").read_text(encoding="utf-8")
         # Insertar los valores en el HTML
         html = html.format(
-            block=self,
-            evaluacion_html=evaluacion_html
+            block=self
         )
         frag = Fragment(html)
 
@@ -135,6 +119,11 @@ class EpnXBlock(XBlock):
 
         js_str = importlib.resources.files(__package__).joinpath("static/js/src/epnxblock.js").read_text(encoding="utf-8")
         frag.add_javascript(str(js_str))
+
+        #Pasar los datos JSON al fragmento HTML
+        frag.add_content(
+        '<script type="application/json" id="evaluation-data">{}</script>'.format(json.dumps(data))
+    )
         frag.initialize_js('EpnXBlock')
 
         return frag
@@ -242,10 +231,58 @@ class EpnXBlock(XBlock):
         
         #Guardar el codigo del estudiante
         self.codigo_estudiante = data.get('codigo_estudiante')
-        #Reduccion de numero de pistas 
+        #Seleccion de envio de respuesta Pista - Calificado - Combinado 
+
+        if  self.field_Pista['state'] == 1 and self.field_Calificado['state'] == 0:
+            print('Peticion de tipo pista')
+            self.field_Pista["numero_pistas"] =  self.field_Pista["numero_pistas"]-1
+
+            data = {
+                "id_estudiante": 5,
+                "id_curso": "EPN_E03",
+                "id_actividad": "024156154",
+                "descripcion": self.descripcion,
+                "tipo_retroalimentacion": self.field_Pista['label'],
+                "grado": self.field_Pista['grado'],
+                "codigo_estudiante": self.codigo_estudiante,
+                "test_cases": self.test_cases
+            }
+           
+
+        elif self.field_Pista['state'] == 0 and self.field_Calificado['state'] == 1:
+            print('Peticion de Tipo Calificado')
+            data = {
+                "id_estudiante": 5,
+                "id_curso": "EPN_E03",
+                "id_actividad": "024156154",
+                "descripcion": self.descripcion,
+                "tipo_retroalimentacion": self.field_Calificado['label'],
+                "grado": self.field_Calificado['reduccion_nota'],
+                "codigo_estudiante": self.codigo_estudiante,
+                "test_cases": self.test_cases
+            }
+            print(data)
+
         
-        self.field_Pista["numero_pistas"] =  self.field_Pista["numero_pistas"]-1
-        
+        elif self.field_Pista['state'] == 1 and self.field_Calificado['state'] == 1:
+            print('Peticion de Tipo Combinado')
+            self.field_Pista["numero_pistas"] =  self.field_Pista["numero_pistas"]-1
+            data = {
+                "id_estudiante": 5,
+                "id_curso": "EPN_E03",
+                "id_actividad": "024156154",
+                "descripcion": self.descripcion,
+                "tipo_retroalimentacion": self.field_Calificado['label'],
+                "grado": self.field_Calificado['reduccion_nota'],
+                "codigo_estudiante": self.codigo_estudiante,
+                "test_cases": self.test_cases
+            }
+            print(data)
+
+
+        else:
+            print('Ha ocurrido un error')
+
         return {
         "ia_response": "La respuesta de la IA es: ......",
         "pistas_restantes":  self.field_Pista["numero_pistas"]

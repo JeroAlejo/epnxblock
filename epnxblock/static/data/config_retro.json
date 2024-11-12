@@ -8,13 +8,13 @@
                     "id": "numero_pistas",
                     "label": "N\u00famero de Pistas",
                     "type": "number",
-                    "value": 3
+                    "value": 5
                 },
                 "grado": {
                     "id": "grado",
                     "label": "Grado",
                     "type": "number",
-                    "value": 0.7
+                    "value": 0.9
                 }
             }
         },
@@ -26,7 +26,7 @@
                     "id": "reduccion_nota",
                     "label": "Reducci\u00f3n de Nota",
                     "type": "number",
-                    "value": 0.7
+                    "value": 0.9
                 }
             }
         }
