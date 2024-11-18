@@ -7,11 +7,20 @@ from xblock.fields import Boolean
 import logging
 import json
 import pkg_resources
+import requests
+import os
 #Librerias propias de XBLOCK
 
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock, XBlockAside
 from xblock.fields import Integer, Scope, String, Dict, Float
+
+#Funcion de Carga de configuracion 
+def cargar_configuracion():
+    config_path = importlib.resources.files(__package__).joinpath('static/data/config.json')
+    with open(config_path, 'r', encoding='utf-8') as file:
+            config = json.load(file)
+    return config
 
 log = logging.getLogger(__name__)
 
@@ -48,13 +57,13 @@ class EpnXBlock(XBlock):
 
     #Campo bandera tipo diccionario para cada retroalimentacion para mostar al estudiante
     field_Pista = Dict(
-        default={"label":"Pista", "numero_pistas": 1,"grado": 0, "state": 0},
+        default={"label":"Pistas", "numero_pistas": 1,"grado": 0, "state": 0},
         scope = Scope.settings
     )
 
 
     field_Calificado = Dict(
-        default={"label":"Calificado", "reduccion_nota": 0, "state": 1},
+        default={"label":"Calificado", "reduccion_nota": 0, "state": 0},
         scope = Scope.settings
     )
     
@@ -210,6 +219,9 @@ class EpnXBlock(XBlock):
                 self.field_Pista['numero_pistas'] = item['parameters']['numero_pistas']['value']
                 self.field_Pista['grado'] = item['parameters']['grado']['value']
                 self.field_Pista['state'] = item['state']
+            if item.get('name') == 'Calificado': 
+                self.field_Calificado['reduccion_nota'] = item['parameters']['reduccion_nota']['value']
+                self.field_Calificado['state'] = item['state']
 
         #Ruta de archivo de configuracion
         resource_path = importlib.resources.files(__package__).joinpath('static/data/config_retro.json')
@@ -223,68 +235,96 @@ class EpnXBlock(XBlock):
         except Exception as e: 
             return {"result": "error","message": str(e)}
 
-      
     
+
     #Controlador para envio del codigo del estudiante 
     @XBlock.json_handler
     def envio_respuesta(self, data, suffix=''):
         
         #Guardar el codigo del estudiante
         self.codigo_estudiante = data.get('codigo_estudiante')
-        #Seleccion de envio de respuesta Pista - Calificado - Combinado 
+        #Enlace al servidor 
+        config = cargar_configuracion()
+        server_url = f"http://{config['server_ip']}:{config['server_port']}/api/transaccion"
 
+        #Seleccion de envio de respuesta Pista - Calificado - Combinado 
+        #Peticion al servidor de una retroalimentacion Tipo Pista
         if  self.field_Pista['state'] == 1 and self.field_Calificado['state'] == 0:
             print('Peticion de tipo pista')
             self.field_Pista["numero_pistas"] =  self.field_Pista["numero_pistas"]-1
 
-            data = {
+            payload = {
                 "id_estudiante": 5,
-                "id_curso": "EPN_E03",
-                "id_actividad": "024156154",
-                "descripcion": self.descripcion,
-                "tipo_retroalimentacion": self.field_Pista['label'],
-                "grado": self.field_Pista['grado'],
+                "id_tarea": "024156154",
+                "descripcion_tarea": self.descripcion,
                 "codigo_estudiante": self.codigo_estudiante,
-                "test_cases": self.test_cases
+                "salida_esperada": 'a',
+                "tipo_retroalimentacion": self.field_Pista['label']
+                #"grado": self.field_Pista['grado']
             }
            
-
+         #Peticion al servidor de una retroalimentacion Tipo Calificado
         elif self.field_Pista['state'] == 0 and self.field_Calificado['state'] == 1:
             print('Peticion de Tipo Calificado')
-            data = {
+            payload = {
                 "id_estudiante": 5,
-                "id_curso": "EPN_E03",
-                "id_actividad": "024156154",
-                "descripcion": self.descripcion,
-                "tipo_retroalimentacion": self.field_Calificado['label'],
-                "grado": self.field_Calificado['reduccion_nota'],
+                "id_tarea": "024156154",
+                "descripcion_tarea": self.descripcion,
                 "codigo_estudiante": self.codigo_estudiante,
-                "test_cases": self.test_cases
+                "salida_esperada": 'a',
+                "tipo_retroalimentacion": self.field_Calificado['label']
+                #"grado": self.field_Pista['grado']
             }
-            print(data)
+            
 
-        
+         #Peticion al servidor de una retroalimentacion Tipo Combinado
         elif self.field_Pista['state'] == 1 and self.field_Calificado['state'] == 1:
             print('Peticion de Tipo Combinado')
+            
             self.field_Pista["numero_pistas"] =  self.field_Pista["numero_pistas"]-1
-            data = {
-                "id_estudiante": 5,
-                "id_curso": "EPN_E03",
-                "id_actividad": "024156154",
-                "descripcion": self.descripcion,
-                "tipo_retroalimentacion": self.field_Calificado['label'],
-                "grado": self.field_Calificado['reduccion_nota'],
-                "codigo_estudiante": self.codigo_estudiante,
-                "test_cases": self.test_cases
-            }
-            print(data)
+
+            if(self.field_Pista["numero_pistas"]== 0):
+                print("Tipo Calificado")
+                payload = {
+                    "id_estudiante": 5,
+                    "id_tarea": "024156154",
+                    "descripcion_tarea": self.descripcion,
+                    "codigo_estudiante": self.codigo_estudiante,
+                    "salida_esperada": "a",
+                    "tipo_retroalimentacion":  self.field_Pista["label"]
+                    #"grado": self.field_Pista['grado']
+                }
+            else:
+                print("Tipo Pista")
+                payload = {
+                    "id_estudiante": 5,
+                    "id_tarea": "024156154",
+                    "descripcion_tarea": self.descripcion,
+                    "codigo_estudiante": self.codigo_estudiante,
+                    "salida_esperada": "a",
+                    "tipo_retroalimentacion":  self.field_Calificado["label"]
+                    #"grado": self.field_Pista['grado']
+                }
+
+    
+           
 
 
         else:
             print('Ha ocurrido un error')
 
+        #Realizar la peticion al servidor 
+        try: 
+            print(payload)
+            response = requests.post(server_url,json=payload)
+            response_data = response.json()
+            print("Respuesta del servidor retroalimentacion: ", response_data)
+        except requests.exceptions.RequestException as e:
+            print("Error al enviar transaccion: ",str(e))
+            return{"result":"error","message" : str(e)}
+
         return {
-        "ia_response": "La respuesta de la IA es: ......",
+        "ia_response": response_data['message'],
         "pistas_restantes":  self.field_Pista["numero_pistas"]
         }
     
@@ -301,4 +341,9 @@ class EpnXBlock(XBlock):
             
         ]
     
-    
+#Pista-retorno
+# message:
+# retroalimentacion: 
+# 
+# Calificado 
+# Pendiente de como retorna     

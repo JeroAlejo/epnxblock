@@ -2,19 +2,19 @@
     "retroalimentacion": [
         {
             "name": "Pistas",
-            "state": 1,
+            "state": 0,
             "parameters": {
                 "numero_pistas": {
                     "id": "numero_pistas",
                     "label": "N\u00famero de Pistas",
                     "type": "number",
-                    "value": 5
+                    "value": 1
                 },
                 "grado": {
                     "id": "grado",
                     "label": "Grado",
                     "type": "number",
-                    "value": 0.9
+                    "value": 0.5
                 }
             }
         },
@@ -26,7 +26,7 @@
                     "id": "reduccion_nota",
                     "label": "Reducci\u00f3n de Nota",
                     "type": "number",
-                    "value": 0.9
+                    "value": 0.5
                 }
             }
         }
