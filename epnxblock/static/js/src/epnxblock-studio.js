@@ -1,15 +1,18 @@
 //Archivo JS para el EPNXBLOCK en STUDIO
-
+/*
+function carga_imagen(element, data){
+  // Seleccionamos la imagen con id 'icon' dentro del contenedor 'element'
+  $(".image-explorer-wrapper ", element).css("background", "url("+data['hotspot_image']+") no-repeat scroll 0 0 rgba(0, 0, 0, 0)");
+  console.log(data)
+}*/
 
 function EpnXBlockStudio(runtime, element, data){
-  
- 
+  //carga_imagen(element,data)
+
+  // Obtener la URL de la imagen desde el JSON incrustado
   /*
-  $(document).ready(function() {
-    quill = new Quill('#editor', {
-        theme: 'snow'
-    });
-  });
+  const imageData = JSON.parse($('#image-url').text());
+  $('#help-icon').attr('src', imageData.url);
   */
 
    //Obtener JSON para los tipos de retroalimentacion y sus parametros
@@ -48,7 +51,8 @@ function EpnXBlockStudio(runtime, element, data){
 
     if((data['titulo']=="" || data['titulo']==null) || 
        (data['descripcion']=="" || data['descripcion']==null) ||
-       (data['fecha_entrega']=="" || data['fecha_entrega']==null)
+       (data['fecha_entrega']=="" || data['fecha_entrega']==null) ||
+       (data['salida_esperada'] == "" || data['salida_esperada'] == null)
       ){
         return false;
 
@@ -165,7 +169,7 @@ function EpnXBlockStudio(runtime, element, data){
 
       //Preparacion previa de datos
       //GENERAL
-      const des = quill.root.innerHTML;
+      //const des = quill.root.innerHTML;
       
       //Config_data - Retroalimentacion
       //analizar estado de checkboxes
@@ -184,21 +188,18 @@ function EpnXBlockStudio(runtime, element, data){
 
           }
 
-          //actualizacion de parametros 
+          //actualizacion de parametros Calificado
           if(item.name == "Calificado"){
             item.parameters.reduccion_nota.value = parseFloat(document.getElementById('grado').value);
           }
       });
 
-      
-      //Archivo de configuracion actualizado
-      console.log(retro_Data);
-
       //MODELO de peticion cuando hago 
         const data ={
             //General
             titulo: document.getElementById('titulo').value,
-            descripcion: des,
+            descripcion: document.getElementById('descripcion').value,
+            salida_esperada: document.getElementById('salida_esperada').value,
             fecha_entrega : document.getElementById('fecha_entrega').value,
 
             //Codigo
@@ -220,7 +221,6 @@ function EpnXBlockStudio(runtime, element, data){
             return;
           }
           
-
           console.log(data); 
 
         $.ajax({

@@ -24,18 +24,25 @@
                     
                     <label  for="titulo" ><h3 style="display: inline;" class="t3">Título:</h3></label>
                     <input class="text_info" type="text" id="titulo" placeholder= "Ingrese titulo de la actividad" value="{block.titulo}">
+                    <span class="help-icon" data-tooltip ="Ingrese un título que describa brevemente la actividad.">?</span>   
 
                     <label for="fecha_entrega"><h3  class="t3">Fecha de entrega:</h3></label>
                     <input  class="text_info" type="date" id="fecha_entrega" value="{block.fecha_entrega}">
                         
-                    <label ><h3 class="t3">Descripción:</h3></label>
-                  
-                      <!-- Contenedor del editor de Quill -->
-                      <div id="editor" style="height: 500px;">
+                    <label for="descripcion"><h3 class="t3">Descripción:</h3></label>
+                    <textarea id="descripcion" class="text_descripion">{block.descripcion}</textarea>
+
+                    <label for="salida_esperada"><h3 class="t3">Salida esperada:</h3></label>
+                    <textarea id="salida_esperada" class="text_salida">{block.salida_esperada}</textarea>
+
+                      <!-- Contenedor del editor de Quill 
+                         <div id="editor" style="height: 500px;">
                         {block.descripcion}
                        
                     </div>
                     
+                      -->
+                  
 
                 </div>
             </div>
@@ -89,6 +96,4 @@
     </body>
 
 </html>
-
-
 

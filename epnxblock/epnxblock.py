@@ -9,11 +9,13 @@ import json
 import pkg_resources
 import requests
 import os
+
 #Librerias propias de XBLOCK
 
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock, XBlockAside
 from xblock.fields import Integer, Scope, String, Dict, Float
+
 
 #Funcion de Carga de configuracion 
 def cargar_configuracion():
@@ -45,6 +47,12 @@ class EpnXBlock(XBlock):
         help="Descripcion de la arctividad",
         default="",
         scope = Scope.content
+    )
+
+    salida_esperada = String(
+        help="Salida que se vera en consola",
+        default="",
+        scope= Scope.content 
     )
 
     fecha_entrega = String(
@@ -112,8 +120,6 @@ class EpnXBlock(XBlock):
         data = {"eva":[{ "Pista": {"label": self.field_Pista["label"], "state": self.field_Pista["state"], "numero_pistas": self.field_Pista["numero_pistas"]}},
         {"Calificado": {"label":self.field_Calificado["label"] ,"stade": self.field_Calificado["state"] }}]}
 
-        
-        
         #Carga de Fragmento HTML
         html = importlib.resources.files(__package__).joinpath("static/html/epnxblock.html").read_text(encoding="utf-8")
         # Insertar los valores en el HTML
@@ -143,7 +149,9 @@ class EpnXBlock(XBlock):
         #Carga de Fragmento HTML
         html_str = importlib.resources.files(__package__).joinpath("static/html/epnxblock-studio.html").read_text(encoding="utf-8")
         frag = Fragment(str(html_str).format(block=self))
+       
 
+        
         #CARGA DE ARCHIVO DE CONFIGURACION JSON 
         resource_path = importlib.resources.files(__package__).joinpath('static/data/config_retro.json')
         with open(resource_path, 'r', encoding='utf-8') as file:
@@ -154,23 +162,6 @@ class EpnXBlock(XBlock):
             '<script type= "application/json" id= "checkbox-data">{}</script>'.format(json.dumps(config_retro))
         )
 
-         #Carga de Quill desde la CDN CSS Y JS
-        frag.add_content("""
-         <!-- Incluir los archivos de Quill -->
-        <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
-        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-        
-        <!-- Script para inicializar Quill -->
-        <script>
-          var quill;
-          document.addEventListener("DOMContentLoaded", function () {
-            quill = new Quill('#editor', {
-              theme: 'snow'
-            });
-          });
-        </script>             
-        """)
-
         # Carga de archivo CSS 
         css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock.css").read_text(encoding="utf-8")
         frag.add_css(str(css_str))
@@ -180,10 +171,7 @@ class EpnXBlock(XBlock):
         frag.add_javascript(str(js_str))
 
         # Inicializar el JavaScript del XBlock
-        frag.initialize_js('EpnXBlockStudio', {
-            'quillJsUrl': 'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js',
-            'quillCssUrl': 'https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css'
-        })
+        frag.initialize_js('EpnXBlockStudio')
 
         return frag
 
@@ -197,6 +185,7 @@ class EpnXBlock(XBlock):
         "Manejador que guarda las configuraciones del profesor en los campos GENERAL"
         self.titulo = data.get('titulo')
         self.descripcion = data.get('descripcion')
+        self.salida_esperada = data.get('salida_esperada')
         self.fecha_entrega = data.get('fecha_entrega')
         #Codigo
         self.codigo_inicial = data.get('codigo_inicial')
@@ -235,98 +224,71 @@ class EpnXBlock(XBlock):
         except Exception as e: 
             return {"result": "error","message": str(e)}
 
-    
-
-    #Controlador para envio del codigo del estudiante 
     @XBlock.json_handler
     def envio_respuesta(self, data, suffix=''):
-        
-        #Guardar el codigo del estudiante
+        # Guardar el código del estudiante
         self.codigo_estudiante = data.get('codigo_estudiante')
-        #Enlace al servidor 
+    
+        # Enlace al servidor desde archivo de configuración
         config = cargar_configuracion()
         server_url = f"http://{config['server_ip']}:{config['server_port']}/api/transaccion"
 
-        #Seleccion de envio de respuesta Pista - Calificado - Combinado 
-        #Peticion al servidor de una retroalimentacion Tipo Pista
-        if  self.field_Pista['state'] == 1 and self.field_Calificado['state'] == 0:
-            print('Peticion de tipo pista')
-            self.field_Pista["numero_pistas"] =  self.field_Pista["numero_pistas"]-1
+        # Función para generar payload
+        def generar_payload(tipo_retroalimentacion):
+            return {
+            "id_estudiante": 55,
+            "id_tarea": "024156153",
+            "descripcion_tarea": self.descripcion,
+            "codigo_estudiante": self.codigo_estudiante,
+            "salida_esperada": 'a',
+            "tipo_retroalimentacion": tipo_retroalimentacion
+        }
 
-            payload = {
-                "id_estudiante": 5,
-                "id_tarea": "024156154",
-                "descripcion_tarea": self.descripcion,
-                "codigo_estudiante": self.codigo_estudiante,
-                "salida_esperada": 'a',
-                "tipo_retroalimentacion": self.field_Pista['label']
-                #"grado": self.field_Pista['grado']
-            }
-           
-         #Peticion al servidor de una retroalimentacion Tipo Calificado
+        # Determinar el tipo de retroalimentación
+        payload = None
+        if self.field_Pista['state'] == 1 and self.field_Calificado['state'] == 0:
+            print('Petición de tipo Pista')
+            payload = generar_payload(self.field_Pista['label'])
+
         elif self.field_Pista['state'] == 0 and self.field_Calificado['state'] == 1:
-            print('Peticion de Tipo Calificado')
-            payload = {
-                "id_estudiante": 5,
-                "id_tarea": "024156154",
-                "descripcion_tarea": self.descripcion,
-                "codigo_estudiante": self.codigo_estudiante,
-                "salida_esperada": 'a',
-                "tipo_retroalimentacion": self.field_Calificado['label']
-                #"grado": self.field_Pista['grado']
-            }
-            
+            print('Petición de tipo Calificado')
+            payload = generar_payload(self.field_Calificado['label'])
 
-         #Peticion al servidor de una retroalimentacion Tipo Combinado
         elif self.field_Pista['state'] == 1 and self.field_Calificado['state'] == 1:
-            print('Peticion de Tipo Combinado')
-            
-            self.field_Pista["numero_pistas"] =  self.field_Pista["numero_pistas"]-1
-
-            if(self.field_Pista["numero_pistas"]== 0):
-                print("Tipo Calificado")
-                payload = {
-                    "id_estudiante": 5,
-                    "id_tarea": "024156154",
-                    "descripcion_tarea": self.descripcion,
-                    "codigo_estudiante": self.codigo_estudiante,
-                    "salida_esperada": "a",
-                    "tipo_retroalimentacion":  self.field_Pista["label"]
-                    #"grado": self.field_Pista['grado']
-                }
+            print('Petición de tipo Combinado')
+            if self.field_Pista["numero_pistas"] > 0:
+                print('Enviando como Pista')
+                payload = generar_payload(self.field_Pista['label'])
             else:
-                print("Tipo Pista")
-                payload = {
-                    "id_estudiante": 5,
-                    "id_tarea": "024156154",
-                    "descripcion_tarea": self.descripcion,
-                    "codigo_estudiante": self.codigo_estudiante,
-                    "salida_esperada": "a",
-                    "tipo_retroalimentacion":  self.field_Calificado["label"]
-                    #"grado": self.field_Pista['grado']
-                }
-
-    
-           
-
+                print('Enviando como Calificado')
+                payload = generar_payload(self.field_Calificado['label'])
 
         else:
-            print('Ha ocurrido un error')
+            print('Error: configuración de retroalimentación no válida')
+            return {"result": "error", "message": "Configuración de retroalimentación inválida"}
 
-        #Realizar la peticion al servidor 
-        try: 
-            print(payload)
-            response = requests.post(server_url,json=payload)
+        # Enviar la petición al servidor
+        try:
+            print(f"Enviando payload: {payload}")
+            response = requests.post(server_url, json=payload)
+            response.raise_for_status()  # Levanta excepciones para errores HTTP
             response_data = response.json()
-            print("Respuesta del servidor retroalimentacion: ", response_data)
-        except requests.exceptions.RequestException as e:
-            print("Error al enviar transaccion: ",str(e))
-            return{"result":"error","message" : str(e)}
+            print("Respuesta del servidor retroalimentación: ", response_data)
+        
+            # Reducir el número de pistas si la petición fue exitosa y es de tipo Pista
+            if self.field_Pista['state'] > 0:
+                self.field_Pista["numero_pistas"] -= 1
 
-        return {
-        "ia_response": response_data['message'],
-        "pistas_restantes":  self.field_Pista["numero_pistas"]
-        }
+            return {
+                "ia_response": response_data.get('message', 'Sin respuesta'),
+                "pistas_restantes": self.field_Pista["numero_pistas"]
+            }
+
+        except requests.exceptions.RequestException as e:
+            print("Error al enviar transacción: ", str(e))
+            return {"result": "error", "message": "Error de conexión al servidor"}
+
+
     
 
     # TO-DO: change this to create the scenarios you'd like to see in the
@@ -344,6 +306,5 @@ class EpnXBlock(XBlock):
 #Pista-retorno
 # message:
 # retroalimentacion: 
-# 
 # Calificado 
 # Pendiente de como retorna     
