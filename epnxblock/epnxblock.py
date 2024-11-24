@@ -150,8 +150,6 @@ class EpnXBlock(XBlock):
         html_str = importlib.resources.files(__package__).joinpath("static/html/epnxblock-studio.html").read_text(encoding="utf-8")
         frag = Fragment(str(html_str).format(block=self))
        
-
-        
         #CARGA DE ARCHIVO DE CONFIGURACION JSON 
         resource_path = importlib.resources.files(__package__).joinpath('static/data/config_retro.json')
         with open(resource_path, 'r', encoding='utf-8') as file:
@@ -169,6 +167,8 @@ class EpnXBlock(XBlock):
         #Carga de archivo JS para Studio (EpnXBlockStudio)
         js_str = importlib.resources.files(__package__).joinpath("static/js/src/epnxblock-studio.js").read_text(encoding="utf-8")
         frag.add_javascript(str(js_str))
+
+        frag.add_javascript_url("https://cdn.jsdelivr.net/npm/sweetalert2@11")
 
         # Inicializar el JavaScript del XBlock
         frag.initialize_js('EpnXBlockStudio')

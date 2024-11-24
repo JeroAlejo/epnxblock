@@ -43,6 +43,12 @@ function EpnXBlock(runtime, element, init_args) {
 
 function EpnXBlock(runtime, element, init_args) {
 
+  if (typeof window.RequireJS === 'undefined') {
+    console.error('RequireJS no está definido en este entorno.');
+} else {
+    console.log('RequireJS está disponible.');
+}
+
 
   //Obtener JSON para los tipos de retroalimentacion y sus parametros
   const $evaluationDataElement = $("#evaluation-data");

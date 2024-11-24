@@ -1,19 +1,15 @@
 //Archivo JS para el EPNXBLOCK en STUDIO
-/*
-function carga_imagen(element, data){
-  // Seleccionamos la imagen con id 'icon' dentro del contenedor 'element'
-  $(".image-explorer-wrapper ", element).css("background", "url("+data['hotspot_image']+") no-repeat scroll 0 0 rgba(0, 0, 0, 0)");
-  console.log(data)
-}*/
 
 function EpnXBlockStudio(runtime, element, data){
-  //carga_imagen(element,data)
 
-  // Obtener la URL de la imagen desde el JSON incrustado
-  /*
-  const imageData = JSON.parse($('#image-url').text());
-  $('#help-icon').attr('src', imageData.url);
-  */
+
+ // Asegúrate de que SweetAlert2 está cargado desde el CDN
+ if (typeof Swal === 'undefined') {
+  console.error('SweetAlert2 no está disponible');
+} else {
+  console.log('SweetAlert2 cargado correctamente');
+}
+
 
    //Obtener JSON para los tipos de retroalimentacion y sus parametros
    const retro_Data = JSON.parse($(element).find("#checkbox-data").text());
@@ -91,7 +87,6 @@ function EpnXBlockStudio(runtime, element, data){
     mostrarSeccion('codigo'); 
   });
 
- 
 
   //Seleccionar contenedor donde se almacenaran 
   const checkContainer = $(element).find("#checkbox-container");
@@ -213,7 +208,12 @@ function EpnXBlockStudio(runtime, element, data){
 
           //Validar datos
           if(!validar_Datos(data)){
-            alert('Completar todos los campos generales antes de guardar.');
+            Swal.fire({
+              title: '¡Advertencia!',
+              text: 'Completar todos los campos generales antes de guardar.',
+              icon: 'warning',  // Icono de advertencia
+              confirmButtonText: 'Aceptar'
+          });
             return;
           }
           if(!validar_retroalimentacion(retro_Data)){
