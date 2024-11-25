@@ -94,6 +94,7 @@ body{
     margin-left: 2%;
     margin-top: 1%;
 }
+
 .text_salida{
     width: 70%;   /* Ancho del textarea */
     height: 200px;  /* Altura del textarea */
@@ -162,26 +163,25 @@ body{
 }
 
 .param_container {
-    display: flex;
-    align-items: center;
+    
     justify-content: space-between;
-    margin: 8px 0;
+    margin: 2%;
 }
 
 .param_container h3 {
     font-size: 16px;
-    flex: 1;
     margin: 0;
 }
 
 .param_container input {
-    flex: 1;
+   
     padding: 6px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
     width: 100%;
     max-width: 180px; /* Para que no se extienda demasiado */
+    margin-left: 20px;
 }
 
 
@@ -195,6 +195,18 @@ body{
     border: 1px solid #000000;  /* Borde del textarea */
     font-size: 16px;  /* Tamaño de la letra */
     margin-top: 1%;
+    margin-left: 2%;
+}
+.text_cases{
+    font-family: 'Courier New', Courier, monospace;
+    width: 90%;   /* Ancho del textarea */
+    height: 500px;  /* Altura del textarea */
+    resize: none;   /* Evita que el usuario cambie el tamaño del textarea */
+    padding: 10px;  /* Espacio interno */
+    border: 1px solid #000000;  /* Borde del textarea */
+    font-size: 16px;  /* Tamaño de la letra */
+    margin-top: 1%;
+    margin-left: 2%;
 }
 .text_num{
     margin-left: 2%;
@@ -205,11 +217,12 @@ body{
 
 /*Estilo de Tooltips*/
 .help-icon {
-    font-size: 14px;
+    
     color: #007bff;
     margin-left: 5px;
     cursor: pointer;
     position: relative;
+    font-size: larger;
 }
 
 .help-icon::after {
@@ -217,7 +230,7 @@ body{
     position: absolute;
     left: 50%;
     bottom: 120%;
-    transform: translateX(-50%);
+    transform: translateX(-20%);
     background-color: #333;
     color: #fff;
     padding: 5px 10px;

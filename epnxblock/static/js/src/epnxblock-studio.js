@@ -121,9 +121,10 @@ function EpnXBlockStudio(runtime, element, data){
     Object.keys(retro.parameters).forEach(function(paramKey){
       const param = retro.parameters[paramKey];
       paramElement += `
-          <div "param_container">
+          <div class="param_container">
           <h3 class="t3" style="display: inline;">${param.label}:</h3>
           <input class="${param.type}" type="${param.type}" id="${param.id}" value="${param.value}">
+          <span class="help-icon" data-tooltip ="${param.help}">?</span>
           </div>
       `;
     });
@@ -162,9 +163,7 @@ function EpnXBlockStudio(runtime, element, data){
   const handlerUrl = runtime.handlerUrl(element,'guardar_configuracion'); //Nombre del controlador en pyhton
     $(element).find(".updateButton").click(function(){
 
-      //Preparacion previa de datos
-      //GENERAL
-      //const des = quill.root.innerHTML;
+
       
       //Config_data - Retroalimentacion
       //analizar estado de checkboxes

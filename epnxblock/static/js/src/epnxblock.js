@@ -13,8 +13,30 @@ function EpnXBlockAside(runtime, element, block_element, init_args) {
 
 /*
 function EpnXBlock(runtime, element, init_args) {
-  //Funcion interna: Actualiza el contador de votos en la interfaz 
 
+
+  function updateVotes(votes) {
+    //votes es un objeto que tienen las propiedades up y down
+
+    //Encontrar el elemento HTML dentro del bloque (element)
+      $('.upvote .count', element).text(votes.up);
+      $('.downvote .count', element).text(votes.down);
+  }
+  //Generacion de URL para hacer una solicitud POST
+  var handlerUrl = runtime.handlerUrl(element, 'vote');
+
+  //Evento de clic para upvote (span)
+  
+
+  $('.downvote', element).click(function(eventObject) {
+      $.ajax({
+          type: "POST",
+          url: handlerUrl,
+          data: JSON.stringify({voteType: 'down'}),
+          success: updateVotes
+      });
+  });
+  
   function updateVotes(votes) {
     //votes es un objeto que tienen las propiedades up y down
 
@@ -42,7 +64,7 @@ function EpnXBlock(runtime, element, init_args) {
 */
 
 function EpnXBlock(runtime, element, init_args) {
-
+//Si funciona
   if (typeof window.RequireJS === 'undefined') {
     console.error('RequireJS no está definido en este entorno.');
 } else {
@@ -75,6 +97,8 @@ function EpnXBlock(runtime, element, init_args) {
     console.log('Actualizacion realizada');
   };
 
+
+
   //Funcion para visualizacion dinamica de informacion de evaluacion
   //Seleccionar contenedor donde se almacenaran 
   const checkContainer = $(element).find(".evalua_info");
@@ -95,10 +119,10 @@ evaluation_data.eva.forEach(function(item) {
       if (pistaElement.length === 0) {
         // Si no existe, creamos el HTML y lo agregamos
         checkContainer.append(`
-          <div id="pista-${item.Pista.label}">
-            <p><h4>${item.Pista.label}: </h4><span >Número de pistas permitidas: </span>
+          <div class = "t4" id="pista-${item.Pista.label}">
+            <h4 >${item.Pista.label}: </h4><span >Número de pistas permitidas: </span>
             <span class="pista_r"> ${item.Pista.numero_pistas}</span>
-            </p>
+            
           </div>
         `);
       } else {
@@ -120,8 +144,8 @@ evaluation_data.eva.forEach(function(item) {
       if (calificadoElement.length === 0) {
         // Si no existe, creamos el HTML y lo agregamos
         checkContainer.append(`
-          <div id="calificado-${item.Calificado.label}">
-            <p><h4>${item.Calificado.label}: </h4><span>Nota 0/10</span></p>
+          <div  class="t4" id="calificado-${item.Calificado.label}">
+            <h4>${item.Calificado.label}: </h4><span>Nota 0/10</span>
           </div>
         `);
       } else {

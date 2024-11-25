@@ -26,13 +26,14 @@
                     <input class="text_info" type="text" id="titulo" placeholder= "Ingrese titulo de la actividad" value="{block.titulo}">
                     <span class="help-icon" data-tooltip ="Ingrese un título que describa brevemente la actividad.">?</span>   
 
-                    <label for="fecha_entrega"><h3  class="t3">Fecha de entrega:</h3></label>
+                    <label for="fecha_entrega"><h3  class="t3">Fecha de entrega: <span class="help-icon" data-tooltip ="Defina la fecha maxima de entrega.">?</span> </h3></label>
                     <input  class="text_info" type="date" id="fecha_entrega" value="{block.fecha_entrega}">
                         
-                    <label for="descripcion"><h3 class="t3">Descripción:</h3></label>
+                    <label for="descripcion"><h3 class="t3">Descripción: <span class="help-icon" data-tooltip ="Ingrese las indicaciones que debe cumplir el código de la actividad">?</span></h3></label>
+                    
                     <textarea id="descripcion" class="text_descripion">{block.descripcion}</textarea>
 
-                    <label for="salida_esperada"><h3 class="t3">Salida esperada:</h3></label>
+                    <label for="salida_esperada"><h3 class="t3">Salida esperada: <span class="help-icon" data-tooltip ="Ingrese la salida esperada de la consola del programa">?</span></h3></label>
                     <textarea id="salida_esperada" class="text_salida">{block.salida_esperada}</textarea>
 
                       <!-- Contenedor del editor de Quill 
@@ -74,14 +75,13 @@
         <section id="codigo" class="contenido-seccion" style="display:none;">
             <div class="epn_xblock">
                 <div class="item">
-                    <h3 class="t3"> Código incial (opcional):</h3>
-                    <textarea class="text_num" cols="1" rows="25" readonly></textarea>
-                    <textarea class="text_code" id="codigo_inicial" cols="70" rows="25"></textarea>
+                    <h3 class="t3"> Código incial (opcional):  <span class="help-icon" data-tooltip ="Ingrese el código inicial que se brindará al estudiante.">?</span>   </h3>
+                    <textarea class="text_code" id="codigo_inicial" cols="70" rows="25">{block.codigo_inicial}</textarea>
                 </div>
                 
                 <div class="item">
-                    <h3 class="t3">Test Cases:</h3>
-                    <textarea class="text_code" id="test_cases"></textarea>
+                    <h3 class="t3">Test Cases:  <span class="help-icon" data-tooltip ="Ingrese los test cases para evaluar el código del estudiante.">?</span>   </h3>
+                    <textarea class="text_cases" id="test_cases">{block.test_cases}</textarea>
                 </div>
 
             </div>

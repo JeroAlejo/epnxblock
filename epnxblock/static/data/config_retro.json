@@ -2,31 +2,34 @@
     "retroalimentacion": [
         {
             "name": "Pistas",
-            "state": 0,
+            "state": 1,
             "parameters": {
                 "numero_pistas": {
                     "id": "numero_pistas",
                     "label": "N\u00famero de Pistas",
                     "type": "number",
-                    "value": 1
+                    "value": 3,
+                    "help": "N\u00famero de pistas permitidas al estudiante"
                 },
                 "grado": {
                     "id": "grado",
                     "label": "Grado",
                     "type": "number",
-                    "value": 0.5
+                    "value": 0.5,
+                    "help": "Temperatura de respuesta de la IA"
                 }
             }
         },
         {
             "name": "Calificado",
-            "state": 0,
+            "state": 1,
             "parameters": {
                 "reduccion_nota": {
                     "id": "reduccion_nota",
                     "label": "Reducci\u00f3n de Nota",
                     "type": "number",
-                    "value": 0.5
+                    "value": 0.5,
+                    "help": "Porcentaje de reduccion de nota en caso de fallar un test case"
                 }
             }
         }

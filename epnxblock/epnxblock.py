@@ -44,7 +44,7 @@ class EpnXBlock(XBlock):
     )
 
     descripcion = String(
-        help="Descripcion de la arctividad",
+        help="Ingrese las indicaciones que debe cumplir el código de la actividad",
         default="",
         scope = Scope.content
     )
@@ -228,7 +228,6 @@ class EpnXBlock(XBlock):
     def envio_respuesta(self, data, suffix=''):
         # Guardar el código del estudiante
         self.codigo_estudiante = data.get('codigo_estudiante')
-    
         # Enlace al servidor desde archivo de configuración
         config = cargar_configuracion()
         server_url = f"http://{config['server_ip']}:{config['server_port']}/api/transaccion"
@@ -236,11 +235,11 @@ class EpnXBlock(XBlock):
         # Función para generar payload
         def generar_payload(tipo_retroalimentacion):
             return {
-            "id_estudiante": 55,
+            "id_estudiante": 20,
             "id_tarea": "024156153",
             "descripcion_tarea": self.descripcion,
             "codigo_estudiante": self.codigo_estudiante,
-            "salida_esperada": 'a',
+            "salida_esperada": self.salida_esperada,
             "tipo_retroalimentacion": tipo_retroalimentacion
         }
 
@@ -276,7 +275,7 @@ class EpnXBlock(XBlock):
             print("Respuesta del servidor retroalimentación: ", response_data)
         
             # Reducir el número de pistas si la petición fue exitosa y es de tipo Pista
-            if self.field_Pista['state'] > 0:
+            if self.field_Pista['state'] == 1:
                 self.field_Pista["numero_pistas"] -= 1
 
             return {
@@ -286,10 +285,7 @@ class EpnXBlock(XBlock):
 
         except requests.exceptions.RequestException as e:
             print("Error al enviar transacción: ", str(e))
-            return {"result": "error", "message": "Error de conexión al servidor"}
-
-
-    
+            return {"ia_response": "Error de conexión al servidor"}
 
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.

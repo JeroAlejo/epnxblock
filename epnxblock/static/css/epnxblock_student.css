@@ -45,9 +45,7 @@ html, body {
     width: 100%;
 }
 
-.ai_content_div{
-    width: 60%;
-}
+
 .ai_response{
     width: 100%;   /* Ancho del textarea */
     height: 200px;  /* Altura del textarea */
@@ -58,6 +56,27 @@ html, body {
     margin: 2%;
     border-radius: 25px;
 }
+.t4{
+    margin-left: 2%;
+}
+
+#test_code {
+    background-color: white; /* Color inicial */
+    color: black; /* Color del texto */
+    border: 2px solid #007bff; /* Borde azul */
+    padding: 10px 20px; /* Tamaño del botón */
+    font-size: 16px; /* Tamaño del texto */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar por encima */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Animación suave */
+    margin-left: 2%;
+}
+
+#test_code:hover {
+    background-color: #007bff; /* Fondo celeste al pasar el cursor */
+    color: white; /* Texto blanco */
+}
+
 
 .img_robot{
    
