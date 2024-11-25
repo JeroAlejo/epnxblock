@@ -2,13 +2,13 @@
     "retroalimentacion": [
         {
             "name": "Pistas",
-            "state": 1,
+            "state": 0,
             "parameters": {
                 "numero_pistas": {
                     "id": "numero_pistas",
                     "label": "N\u00famero de Pistas",
                     "type": "number",
-                    "value": 3,
+                    "value": 1,
                     "help": "N\u00famero de pistas permitidas al estudiante"
                 },
                 "grado": {
@@ -22,7 +22,7 @@
         },
         {
             "name": "Calificado",
-            "state": 1,
+            "state": 0,
             "parameters": {
                 "reduccion_nota": {
                     "id": "reduccion_nota",
