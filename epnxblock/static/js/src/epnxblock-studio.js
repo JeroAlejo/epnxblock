@@ -68,49 +68,88 @@ function EpnXBlockStudio(runtime, element, data){
     }
   }
 
-  //Funcion para armar JSON de Test cases 
   function procesarTestCases(rawTestCases) {
-    //Asegurarse de que se haya proporcionado algún contenido 
+    // Asegurarse de que se haya proporcionado algún contenido
     if (!rawTestCases.trim()) {
-        return null; 
+        return null; // Retorna null si está vacío
     }
-    //Division de los test cases usando Case como delimitador 
-    const cases = rawTestCases.split(/Case:/).slice(1); 
 
-    //Creacion del Json donde se almacenaran los Cases
+    // División de los test cases usando 'Case:' como delimitador
+    const cases = rawTestCases.split(/Case:/).slice(1);
+
+    // Validar que haya al menos un caso definido
+    if (cases.length === 0) {
+        alert("El formato de los test cases no es válido. Asegúrate de que comiencen con 'Case:'.");
+        return null;
+    }
+
+    // Creación del JSON donde se almacenarán los Cases
     const testCasesJson = {};
-    //Procesamiento de cada caso
-    cases.forEach((testCase, index) => {
-        const lines = testCase.trim().split("\n");
-        //Creacion de los campos que conforman un est case
+
+    // Procesamiento de cada caso
+    for (let index = 0; index < cases.length; index++) {
+        const testCase = cases[index].trim();
+        const lines = testCase.split("\n").map(line => line.trim());
+
+        // Variables para almacenar los campos de cada test case
         let gradeReduction = "";
-        let input = [];
+        let input = "";
         let output = "";
 
-        //Procesamiento de cada campo dentro del Test Case
-        lines.forEach(line => {
-            if (line.startsWith("Grade reduction")) {
-                gradeReduction = line.split("=")[1].trim();
-            } else if (line.startsWith("input")) {
-                input = lines.slice(lines.indexOf(line) + 1, lines.indexOf("output")).join("\n").trim();
-            } else if (line.startsWith("output")) {
-                output = lines.slice(lines.indexOf(line) + 1).join("\n").trim();
-            }
-        });
+        // Variables para rastrear las secciones
+        let inputStartIndex = -1, outputStartIndex = -1;
 
-        //Adiciion del Test Case al JSON aumentado un identificador 
+        // Procesar las líneas de cada caso
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+
+            // Detectar "Grade reduction" y capturar su valor en la siguiente línea
+            if (line === "Grade reduction =") {
+                if (i + 1 < lines.length) {
+                    gradeReduction = lines[i + 1].trim();
+                    i++; // Saltar a la siguiente línea después de capturar el valor
+                } else {
+                    alert(`El valor de "Grade reduction" está ausente en el caso ${index + 1}.`);
+                    return null;
+                }
+            } else if (line.startsWith("input =")) {
+                inputStartIndex = i;
+            } else if (line.startsWith("output =")) {
+                outputStartIndex = i;
+            }
+        }
+
+        // Validar la presencia de la sección 'Grade reduction'
+        if (gradeReduction === "") {
+            alert(`El test case ${index + 1} debe contener la sección 'Grade reduction'.`);
+            return null;
+        }
+
+        // Validar la presencia de las secciones 'input' y 'output'
+        if (inputStartIndex === -1 || outputStartIndex === -1) {
+            alert(`El test case ${index + 1} debe contener las secciones 'input' y 'output'.`);
+            return null;
+        }
+
+        // Extraer contenido de 'input' y 'output'
+        input = lines.slice(inputStartIndex + 1, outputStartIndex).join("\n").trim();
+        output = lines.slice(outputStartIndex + 1).join("\n").trim();
+
+        if (!input || !output) {
+            alert(`El test case ${index + 1} no tiene contenido válido en 'input' o 'output'.`);
+            return null;
+        }
+
+        // Añadir el test case al JSON con un identificador
         testCasesJson[`Caso${index + 1}`] = {
             "Grade reduction": gradeReduction,
             "input": input,
             "output": output,
         };
-    });
+    }
 
-    //retorno del JSON con los test cases 
-    console.log(testCasesJson);
     return testCasesJson;
 }
-
 
 
   // Asignar eventos de clic a los enlaces de navegación
@@ -188,8 +227,7 @@ function EpnXBlockStudio(runtime, element, data){
     const idCheck = checkbox.attr("id");
     
     // Buscar el checkbox en el JSON y actualizar su `state` en tiempo real
-    const item = retro_Data.retroalimentacion.find(elem => elem.name == idCheck);
-
+   // const item = retro_Data.retroalimentacion.find(elem => elem.name == idCheck);
 
     if(checkbox.is(":checked")){
       //Mostrar seccion si esta seleccionado
@@ -216,7 +254,7 @@ function EpnXBlockStudio(runtime, element, data){
             item.state = checkbox.checked ? 1 : 0;
           }
 
-          //actualizacion de parametros de Pistas
+          //actualizacion de parametros de Pistas 
           if(item.name == "Pistas"){
             item.parameters.numero_pistas.value = parseInt(document.getElementById('numero_pistas').value);
             item.parameters.grado.value = parseFloat(document.getElementById('grado').value);
@@ -225,7 +263,7 @@ function EpnXBlockStudio(runtime, element, data){
 
           //actualizacion de parametros Calificado
           if(item.name == "Calificado"){
-            item.parameters.reduccion_nota.value = parseFloat(document.getElementById('grado').value);
+            item.parameters.reduccion_nota.value = parseFloat(document.getElementById('reduccion_nota').value);
           }
       });
       //Recoger los test cases ingresados por el profesor 
@@ -251,13 +289,16 @@ function EpnXBlockStudio(runtime, element, data){
 
           //Validar datos
           if(!validar_Datos(data)){
+            alert('Completar todos los campos generales antes de guardar.');
+            return;
+            /* PENDIENTE POR RESOLVER
             Swal.fire({
               title: '¡Advertencia!',
               text: 'Completar todos los campos generales antes de guardar.',
               icon: 'warning',  // Icono de advertencia
               confirmButtonText: 'Aceptar'
           });
-            return;
+            return;*/
           }
           if(!validar_retroalimentacion(retro_Data)){
             alert('No se ha seleccionado ningun tipo de Retroalimentación.');

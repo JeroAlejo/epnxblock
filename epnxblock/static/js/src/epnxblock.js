@@ -65,15 +65,14 @@ function EpnXBlock(runtime, element, init_args) {
     $('#evaluate_code').prop('disabled', true); // Deshabilitar botón
   }
 
-  //Funcionalidad de flecha
+  // Funcionalidad de flecha para mostrar/ocultar 
   $('#toggle-arrow').on('click', function () {
     const arrow = $(this);
-    const textarea = $('.text_adicional');
-    // Cambiar la clase para rotar la flecha
+    const content = $('.additional-content'); 
     arrow.toggleClass('expanded');
-    // Mostrar u ocultar el textarea
-    textarea.toggle();
-});
+    // Mostrar u ocultar 
+   content.toggle();
+  });
 
 
   //Solicitud ajax para enviar el codigo del estudiante

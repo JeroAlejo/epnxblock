@@ -248,4 +248,20 @@ body{
     visibility: visible;
 }
 
+.updateButton {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.updateButton:hover  {
+    background-color: #f3f8fe;
+    color: #000000;
+}
+
 

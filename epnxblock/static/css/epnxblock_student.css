@@ -107,3 +107,6 @@ html, body {
     transform: rotate(180deg);
 }
 
+.para{
+    padding-left: 2%;
+}

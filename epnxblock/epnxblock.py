@@ -16,8 +16,14 @@ from web_fragments.fragment import Fragment
 from xblock.core import XBlock, XBlockAside
 from xblock.fields import Integer, Scope, String, Dict, Float
 
+#Funcion de Carga de archivo de configuracion de retroalimentacion 
+def cargar_config_retro():
+    config_retro_path = importlib.resources.files(__package__).joinpath('static/data/config_retro.json')
+    with open(config_retro_path, 'r', encoding='utf-8') as file:
+            config = json.load(file)
+    return config
 
-#Funcion de Carga de configuracion 
+#Funcion de Carga de configuracion -- Para el servidor 
 def cargar_configuracion():
     config_path = importlib.resources.files(__package__).joinpath('static/data/config.json')
     with open(config_path, 'r', encoding='utf-8') as file:
@@ -31,11 +37,15 @@ class EpnXBlock(XBlock):
     TO-DO: document what your XBlock does.
     """
 
-    # Los campos (Fields) Se definen en la Clase.  Se puede Acceder a ellos de la manera
-    # self.<fieldname>(Campo).
+    #Campo que almacena el JSON de config_retro para ser inicializado
+    config_retro = Dict(
+        default=cargar_config_retro(),
+        scope = Scope.settings
+    )
 
 
     #Campo para almacenar informacion GENERAL -----------------------------------------# 
+
     #Caracter Obligatorio
     titulo = String(
         help="Titulo de la arctividad",
@@ -149,14 +159,10 @@ class EpnXBlock(XBlock):
         html_str = importlib.resources.files(__package__).joinpath("static/html/epnxblock-studio.html").read_text(encoding="utf-8")
         frag = Fragment(str(html_str).format(block=self))
        
-        #CARGA DE ARCHIVO DE CONFIGURACION JSON 
-        resource_path = importlib.resources.files(__package__).joinpath('static/data/config_retro.json')
-        with open(resource_path, 'r', encoding='utf-8') as file:
-            config_retro = json.load(file)
 
-        #Pasar los datos JSON al fragmento HTML
+        #Pasar el campo JSON para ser tratado por JS
         frag.add_content(
-            '<script type= "application/json" id= "checkbox-data">{}</script>'.format(json.dumps(config_retro))
+            '<script type= "application/json" id= "checkbox-data">{}</script>'.format(json.dumps(self.config_retro))
         )
 
         # Carga de archivo CSS 
@@ -189,11 +195,11 @@ class EpnXBlock(XBlock):
         #Codigo
         self.codigo_inicial = data.get('codigo_inicial')
         self.test_cases = data.get('test_cases',{})
-        
-       
+
+        #Parametros en el Campo
+        self.config_retro = data.get('retro')  
 
         #Guardar JSON en archivo de configuracion y guardar variables clave en Campos 
-
         new_config_retro = data.get('retro',{})
 
         for item in new_config_retro.get('retroalimentacion',[]):
@@ -204,18 +210,6 @@ class EpnXBlock(XBlock):
             if item.get('name') == 'Calificado': 
                 self.field_Calificado['reduccion_nota'] = item['parameters']['reduccion_nota']['value']
                 self.field_Calificado['state'] = item['state']
-
-        #Ruta de archivo de configuracion
-        resource_path = importlib.resources.files(__package__).joinpath('static/data/config_retro.json')
-
-        #Guardado de archivo de configuracion 
-        try:
-            with open(resource_path, "w", encoding='utf-8') as file:
-                json.dump(new_config_retro,file,indent=4)
-            return{"result":"success"}
-        
-        except Exception as e: 
-            return {"result": "error","message": str(e)}
 
     @XBlock.json_handler
     def envio_respuesta(self, data, suffix=''):
