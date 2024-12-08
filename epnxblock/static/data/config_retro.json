@@ -15,7 +15,7 @@
                     "id": "grado",
                     "label": "Grado",
                     "type": "number",
-                    "value": 0.5,
+                    "value": 0.6,
                     "help": "Temperatura de respuesta de la IA"
                 }
             }

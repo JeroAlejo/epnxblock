@@ -6,19 +6,19 @@ function EpnXBlockStudio(runtime, element, data){
  // Asegúrate de que SweetAlert2 está cargado desde el CDN
  if (typeof Swal === 'undefined') {
   console.error('SweetAlert2 no está disponible');
-} else {
+  } else {
   console.log('SweetAlert2 cargado correctamente');
-}
+  }
 
 
-   //Obtener JSON para los tipos de retroalimentacion y sus parametros
-   const retro_Data = JSON.parse($(element).find("#checkbox-data").text());
+  //Obtener JSON para los tipos de retroalimentacion y sus parametros
+  const retro_Data = JSON.parse($(element).find("#checkbox-data").text());
   
-  // Función para manejar el cambio de secciones
+  // Funciones Complementarias
+  //Funcion para el menu 
   function mostrarSeccion(seccion) {
     // Ocultar todas las secciones
     $(element).find('.contenido-seccion').hide();
-    
     // Mostrar la sección seleccionada
     $(element).find('#' + seccion).show();
 
@@ -42,7 +42,7 @@ function EpnXBlockStudio(runtime, element, data){
     });
   }
 
-  //Funcion para validar datos 
+  //Funcion para validar datos generales  
   function validar_Datos(data){
 
     if((data['titulo']=="" || data['titulo']==null) || 
@@ -57,10 +57,9 @@ function EpnXBlockStudio(runtime, element, data){
     }
 
   };
-
+  //Funcion para validadr los valores de retroalimentacion 
   function validar_retroalimentacion(data){
 
-  
     if(data.retroalimentacion[0].state == 0 && data.retroalimentacion[1].state == 0){
       return false;
     }else{
@@ -68,6 +67,50 @@ function EpnXBlockStudio(runtime, element, data){
       return true;
     }
   }
+
+  //Funcion para armar JSON de Test cases 
+  function procesarTestCases(rawTestCases) {
+    //Asegurarse de que se haya proporcionado algún contenido 
+    if (!rawTestCases.trim()) {
+        return null; 
+    }
+    //Division de los test cases usando Case como delimitador 
+    const cases = rawTestCases.split(/Case:/).slice(1); 
+
+    //Creacion del Json donde se almacenaran los Cases
+    const testCasesJson = {};
+    //Procesamiento de cada caso
+    cases.forEach((testCase, index) => {
+        const lines = testCase.trim().split("\n");
+        //Creacion de los campos que conforman un est case
+        let gradeReduction = "";
+        let input = [];
+        let output = "";
+
+        //Procesamiento de cada campo dentro del Test Case
+        lines.forEach(line => {
+            if (line.startsWith("Grade reduction")) {
+                gradeReduction = line.split("=")[1].trim();
+            } else if (line.startsWith("input")) {
+                input = lines.slice(lines.indexOf(line) + 1, lines.indexOf("output")).join("\n").trim();
+            } else if (line.startsWith("output")) {
+                output = lines.slice(lines.indexOf(line) + 1).join("\n").trim();
+            }
+        });
+
+        //Adiciion del Test Case al JSON aumentado un identificador 
+        testCasesJson[`Caso${index + 1}`] = {
+            "Grade reduction": gradeReduction,
+            "input": input,
+            "output": output,
+        };
+    });
+
+    //retorno del JSON con los test cases 
+    console.log(testCasesJson);
+    return testCasesJson;
+}
+
 
 
   // Asignar eventos de clic a los enlaces de navegación
@@ -162,14 +205,12 @@ function EpnXBlockStudio(runtime, element, data){
   //FUNCIONES PARA GUARDAR DATOS
   const handlerUrl = runtime.handlerUrl(element,'guardar_configuracion'); //Nombre del controlador en pyhton
     $(element).find(".updateButton").click(function(){
-
-
       
       //Config_data - Retroalimentacion
       //analizar estado de checkboxes
       retro_Data.retroalimentacion.forEach(item =>{
 
-        //actualizacion de la varaible state
+        //actualizacion de la variable state
         const checkbox = document.querySelector(`input[id="${item.name}"]`);
         if (checkbox) {
             item.state = checkbox.checked ? 1 : 0;
@@ -187,8 +228,11 @@ function EpnXBlockStudio(runtime, element, data){
             item.parameters.reduccion_nota.value = parseFloat(document.getElementById('grado').value);
           }
       });
+      //Recoger los test cases ingresados por el profesor 
+      const testCases = document.getElementById('test_cases').value
+      const jsonTestCases = procesarTestCases(testCases);
 
-      //MODELO de peticion cuando hago 
+      //Datos para enviar al archivo de pyhton
         const data ={
             //General
             titulo: document.getElementById('titulo').value,
@@ -198,7 +242,7 @@ function EpnXBlockStudio(runtime, element, data){
 
             //Codigo
             codigo_inicial: document.getElementById('codigo_inicial').value,
-            test_cases : document.getElementById('test_cases').value,
+            test_cases : jsonTestCases,
 
             //carga de reto_config
             retro: retro_Data

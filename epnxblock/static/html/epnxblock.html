@@ -8,23 +8,24 @@
             <p class="t3">{block.descripcion}</p>
             
         </div>
-        <div class="code_content">
+        <div class="student-view">
             <h3 class="t3">Código</h3>
-            <textarea class="zona_codigo" name="zona_codigo" id="zona_codigo">{block.codigo_inicial}</textarea>
-            
+            <div class="buttons-container">
+                <button id="test_code">Solicitar Pista:<span id = "num_pistas"> {block.field_Pista[numero_pistas]} </span></button>
+                <button id="evaluate_code">Evaluar Código</button>
+            </div>
+            <div class="code-ai-container">
+                <textarea class="zona_codigo" name="zona_codigo" id="zona_codigo">{block.codigo_inicial}</textarea>
+                <textarea class="ai_response" name="ai_response" id=""></textarea>
+            </div>
         </div>
-        <div class="retro_content">
-            <h3 class="t3">Esquema de evaluación:</h3>
-            <div class="evalua_info">
-                
-            </div>
-
-            <div class="ai_content">
-                 <textarea class="ai_response" name="ai_response" id=""></textarea>
-            </div>
     
-            <button id="test_code">Probar Código</button>
-
+        <div class="aditional_content">
+            <h3 class="t3">Texto adicional <span class="toggle-arrow" id="toggle-arrow">&#9660;</span> </h3>
+            <textarea id="aditional_context" class = "text_adicional" style = "display: none;"></textarea>
+            <h3>
+                <input id="compilador_check" type = "checkbox"> Salida de compilador 
+            </h3>
         </div>
     </div>
 

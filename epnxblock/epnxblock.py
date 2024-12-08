@@ -83,14 +83,14 @@ class EpnXBlock(XBlock):
         scope= Scope.content
     )
 
-    test_cases = String(
+    test_cases = Dict(
         help="Se almacena el codigo incial brindado por el profesor - OPCIONAL",
-        default= "Sin asignar",
-        scope= Scope.content
+        default= {},
+        scope= Scope.settings
     )
 
 
-    #Campo del profesor: 
+    #Campo del estudiante: 
     codigo_estudiante = String(
         help="Se almacena el codigo del estudiante para hacer la peticion a la IA",
         default= "",
@@ -116,9 +116,8 @@ class EpnXBlock(XBlock):
         """
         La vista principal de EpnXBlock, que se muestra a los estudiantes
         """
-
         data = {"eva":[{ "Pista": {"label": self.field_Pista["label"], "state": self.field_Pista["state"], "numero_pistas": self.field_Pista["numero_pistas"]}},
-        {"Calificado": {"label":self.field_Calificado["label"] ,"stade": self.field_Calificado["state"] }}]}
+        {"Calificado": {"label":self.field_Calificado["label"] ,"state": self.field_Calificado["state"] }}]}
 
         #Carga de Fragmento HTML
         html = importlib.resources.files(__package__).joinpath("static/html/epnxblock.html").read_text(encoding="utf-8")
@@ -182,22 +181,16 @@ class EpnXBlock(XBlock):
 
         # Imprimir los datos entrantes para verificar si son correctos
         print(f"Datos recibidos: {data}")
-        "Manejador que guarda las configuraciones del profesor en los campos GENERAL"
+        #Manejador que guarda las configuraciones del profesor en los campos GENERAL
         self.titulo = data.get('titulo')
         self.descripcion = data.get('descripcion')
         self.salida_esperada = data.get('salida_esperada')
         self.fecha_entrega = data.get('fecha_entrega')
         #Codigo
         self.codigo_inicial = data.get('codigo_inicial')
-        self.test_cases = data.get('test_cases')
+        self.test_cases = data.get('test_cases',{})
         
        
-        #Ejemplo de prueba de conseguir atributos del curso 
-        """
-          self.estudiante_id = str(self.scope_ids.user_id) 
-        self.curso_id = str(self.runtime.course_id)  
-        self.actividad_id = str(self.scope_ids.usage_id)
-        """
 
         #Guardar JSON en archivo de configuracion y guardar variables clave en Campos 
 
@@ -226,46 +219,40 @@ class EpnXBlock(XBlock):
 
     @XBlock.json_handler
     def envio_respuesta(self, data, suffix=''):
+        #Lo que se recibe de Html
+        print(data)
+
+        #Obtener el ID del estudiante y actividad
+        estudiante_id = self.runtime.user_id
+        actividad_id = self.scope_ids.usage_id
+        print(f"El id es: {estudiante_id}")
+        print(f"El id de la actividad es: {actividad_id}")
+
         # Guardar el código del estudiante
         self.codigo_estudiante = data.get('codigo_estudiante')
+
         # Enlace al servidor desde archivo de configuración
         config = cargar_configuracion()
         server_url = f"http://{config['server_ip']}:{config['server_port']}/api/transaccion"
 
-        # Función para generar payload
+        # Función para generar payload -- se carga la variable aux 
         def generar_payload(tipo_retroalimentacion):
             return {
-            "id_estudiante": 20,
-            "id_tarea": "024156153",
+            "id_estudiante": estudiante_id,
+            "id_tarea": actividad_id,
             "descripcion_tarea": self.descripcion,
             "codigo_estudiante": self.codigo_estudiante,
             "salida_esperada": self.salida_esperada,
-            "tipo_retroalimentacion": tipo_retroalimentacion
+            "tipo_retroalimentacion": tipo_retroalimentacion,
+            "contexto_adicional": data.get('contexto_adicional'),
+            "compilador": data.get('compilador'),
+            "test_case": self.test_cases
         }
 
         # Determinar el tipo de retroalimentación
         payload = None
-        if self.field_Pista['state'] == 1 and self.field_Calificado['state'] == 0:
-            print('Petición de tipo Pista')
-            payload = generar_payload(self.field_Pista['label'])
-
-        elif self.field_Pista['state'] == 0 and self.field_Calificado['state'] == 1:
-            print('Petición de tipo Calificado')
-            payload = generar_payload(self.field_Calificado['label'])
-
-        elif self.field_Pista['state'] == 1 and self.field_Calificado['state'] == 1:
-            print('Petición de tipo Combinado')
-            if self.field_Pista["numero_pistas"] > 0:
-                print('Enviando como Pista')
-                payload = generar_payload(self.field_Pista['label'])
-            else:
-                print('Enviando como Calificado')
-                payload = generar_payload(self.field_Calificado['label'])
-
-        else:
-            print('Error: configuración de retroalimentación no válida')
-            return {"result": "error", "message": "Configuración de retroalimentación inválida"}
-
+        payload = generar_payload(data.get('aux'))
+       
         # Enviar la petición al servidor
         try:
             print(f"Enviando payload: {payload}")
@@ -285,7 +272,7 @@ class EpnXBlock(XBlock):
 
         except requests.exceptions.RequestException as e:
             print("Error al enviar transacción: ", str(e))
-            return {"ia_response": "Error de conexión al servidor"}
+            return {"ia_response": "Error de conexión al servidor de Retroalimentación"}
 
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.

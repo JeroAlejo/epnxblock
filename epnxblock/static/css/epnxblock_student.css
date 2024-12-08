@@ -27,58 +27,83 @@ html, body {
  padding: 1%;
 }
 
-/*Zona de codigo*/
-.zona_codigo{
-    
-    width: 95%;   /* Ancho del textarea */
-    height: 400px;  /* Altura del textarea */
-    resize: none;   /* Evita que el usuario cambie el tamaño del textarea */
-    padding: 10px;  /* Espacio interno */
-    border: 1px solid #000000;  /* Borde del textarea */
-    font-size: 16px;  /* Tamaño de la letra */
-    margin-left: 2%;
-    margin-right: 2%;
+.student-view {
+    font-family: Arial, sans-serif;
+    margin: 20px;
 }
 
-.ai_content{
+.buttons-container {
     display: flex;
-    width: 100%;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.buttons-container button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.buttons-container button:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Code and AI response container */
+.code-ai-container {
+    display: flex;
+    gap: 10px;
+}
+
+.zona_codigo, .ai_response {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+    
 }
 
 
-.ai_response{
-    width: 100%;   /* Ancho del textarea */
-    height: 200px;  /* Altura del textarea */
-    resize: none;   /* Evita que el usuario cambie el tamaño del textarea */
-    padding: 1%;  /* Espacio interno */
-    border: 1px solid #000000;  /* Borde del textarea */
-    font-size: 16px;  /* Tamaño de la letra */
-    margin: 2%;
-    border-radius: 25px;
+.zona_codigo {
+    flex: 3; /* 60% width */
+    height: 500px;
 }
+
+.ai_response {
+    flex: 2; /* 40% width */
+    height: 500px;
+}
+
 .t4{
     margin-left: 2%;
 }
 
-#test_code {
-    background-color: white; /* Color inicial */
-    color: black; /* Color del texto */
-    border: 2px solid #007bff; /* Borde azul */
-    padding: 10px 20px; /* Tamaño del botón */
-    font-size: 16px; /* Tamaño del texto */
-    border-radius: 5px; /* Bordes redondeados */
-    cursor: pointer; /* Cambia el cursor al pasar por encima */
-    transition: background-color 0.3s ease, color 0.3s ease; /* Animación suave */
+.text_adicional{
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+    width: 55%;
     margin-left: 2%;
+    height: 100px;
 }
 
-#test_code:hover {
-    background-color: #007bff; /* Fondo celeste al pasar el cursor */
-    color: white; /* Texto blanco */
+/* Estilo de la flecha */
+.toggle-arrow {
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 16px;
+    transition: transform 0.2s ease;
 }
 
-
-.img_robot{
-   
-   width: 20%;
+/* Rotación de la flecha hacia abajo */
+.toggle-arrow.expanded {
+    transform: rotate(180deg);
 }
+
