@@ -24,12 +24,10 @@
             "name": "Calificado",
             "state": 0,
             "parameters": {
-                "reduccion_nota": {
-                    "id": "reduccion_nota",
-                    "label": "Reducci\u00f3n de Nota",
-                    "type": "number",
-                    "value": 0.5,
-                    "help": "Porcentaje de reduccion de nota en caso de fallar un test case"
+                "none": {
+                    "id": "",
+                    "label": "Este tipo de retroalimentación no maneja ningún tipo de parametro"
+                    
                 }
             }
         }

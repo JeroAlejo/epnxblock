@@ -13,6 +13,9 @@ function EpnXBlockStudio(runtime, element, data){
 
   //Obtener JSON para los tipos de retroalimentacion y sus parametros
   const retro_Data = JSON.parse($(element).find("#checkbox-data").text());
+
+  //Obtener JSON de los test cases 
+  const test_cases = JSON.parse($(element).find('#test_casesJSON').text())
   
   // Funciones Complementarias
   //Funcion para el menu 
@@ -68,88 +71,69 @@ function EpnXBlockStudio(runtime, element, data){
     }
   }
 
-  function procesarTestCases(rawTestCases) {
-    // Asegurarse de que se haya proporcionado algún contenido
-    if (!rawTestCases.trim()) {
-        return null; // Retorna null si está vacío
+  function armarTestCases(inputText) {
+    // Expresión regular para capturar cada bloque completo de "Case"
+    const caseRegex = /Case:\s*Grade_reduction\s*=\s*(.+?)\s*input\s*=\s*([\s\S]+?)\s*output\s*=\s*([\s\S]+?)(?=\nCase:|$)/g;
+    const testCases = {};
+    let match;
+    let index = 1;
+
+    // Validar si el campo de test cases está vacío
+    if (inputText.trim() === "") {
+      console.log("test case vacio");
+      return null;
     }
 
-    // División de los test cases usando 'Case:' como delimitador
-    const cases = rawTestCases.split(/Case:/).slice(1);
-
-    // Validar que haya al menos un caso definido
-    if (cases.length === 0) {
-        alert("El formato de los test cases no es válido. Asegúrate de que comiencen con 'Case:'.");
-        return null;
+    // Validar si el texto contiene al menos una palabra clave "Case"
+    if (!/Case:/.test(inputText)) {
+      alert("Ingresa el formato adecuado o deja el campo vacio");
+       //throw new Error("No se encontró ningún bloque 'Case:'. Verifica el formato.");
     }
 
-    // Creación del JSON donde se almacenarán los Cases
-    const testCasesJson = {};
+    // Procesar todos los casos coincidentes
+    while ((match = caseRegex.exec(inputText)) !== null) {
+        const caseName = `Caso${index}`;
+        const gradeReduction = match[1]?.trim();
+        const input = match[2]?.trim();
+        const output = match[3]?.trim();
 
-    // Procesamiento de cada caso
-    for (let index = 0; index < cases.length; index++) {
-        const testCase = cases[index].trim();
-        const lines = testCase.split("\n").map(line => line.trim());
-
-        // Variables para almacenar los campos de cada test case
-        let gradeReduction = "";
-        let input = "";
-        let output = "";
-
-        // Variables para rastrear las secciones
-        let inputStartIndex = -1, outputStartIndex = -1;
-
-        // Procesar las líneas de cada caso
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-
-            // Detectar "Grade reduction" y capturar su valor en la siguiente línea
-            if (line === "Grade reduction =") {
-                if (i + 1 < lines.length) {
-                    gradeReduction = lines[i + 1].trim();
-                    i++; // Saltar a la siguiente línea después de capturar el valor
-                } else {
-                    alert(`El valor de "Grade reduction" está ausente en el caso ${index + 1}.`);
-                    return null;
-                }
-            } else if (line.startsWith("input =")) {
-                inputStartIndex = i;
-            } else if (line.startsWith("output =")) {
-                outputStartIndex = i;
-            }
-        }
-
-        // Validar la presencia de la sección 'Grade reduction'
-        if (gradeReduction === "") {
-            alert(`El test case ${index + 1} debe contener la sección 'Grade reduction'.`);
-            return null;
-        }
-
-        // Validar la presencia de las secciones 'input' y 'output'
-        if (inputStartIndex === -1 || outputStartIndex === -1) {
-            alert(`El test case ${index + 1} debe contener las secciones 'input' y 'output'.`);
-            return null;
-        }
-
-        // Extraer contenido de 'input' y 'output'
-        input = lines.slice(inputStartIndex + 1, outputStartIndex).join("\n").trim();
-        output = lines.slice(outputStartIndex + 1).join("\n").trim();
-
-        if (!input || !output) {
-            alert(`El test case ${index + 1} no tiene contenido válido en 'input' o 'output'.`);
-            return null;
-        }
-
-        // Añadir el test case al JSON con un identificador
-        testCasesJson[`Caso${index + 1}`] = {
+      
+        // Guardar el caso procesado
+        testCases[caseName] = {
             "Grade reduction": gradeReduction,
             "input": input,
             "output": output,
         };
+
+        index++;
     }
 
-    return testCasesJson;
-}
+    // Validar si no se encontraron bloques válidos
+    if (Object.keys(testCases).length === 0) {
+        throw new Error("No se encontró ningún bloque de 'Case:' válido. Verifica el formato de los datos.");
+    }
+
+    return testCases;
+  }
+
+  // Función para convertir JSON a formato de texto para el textarea
+  function convertirJSONaTexto(jsonTestCases) {
+  let formattedText = '';
+  Object.entries(jsonTestCases).forEach(([key, value]) => {
+      formattedText += `Case:\n`;
+      formattedText += `Grade_reduction =\n${value["Grade reduction"]}\n`;
+      formattedText += `input =\n${value.input}\n`;
+      formattedText += `output =\n${value.output}\n\n`;
+  });
+  return formattedText.trim(); // Eliminar espacios extra al final
+  }
+
+  // Convertir JSON a texto
+  const testCasesTexto = convertirJSONaTexto(test_cases);
+
+  // Colocar el texto en el textarea
+  $(element).find('#test_cases').val(testCasesTexto);
+
 
 
   // Asignar eventos de clic a los enlaces de navegación
@@ -254,6 +238,7 @@ function EpnXBlockStudio(runtime, element, data){
             item.state = checkbox.checked ? 1 : 0;
           }
 
+          //Toma de valores de los parametros de cada Retroalimentacion 
           //actualizacion de parametros de Pistas 
           if(item.name == "Pistas"){
             item.parameters.numero_pistas.value = parseInt(document.getElementById('numero_pistas').value);
@@ -261,14 +246,12 @@ function EpnXBlockStudio(runtime, element, data){
 
           }
 
-          //actualizacion de parametros Calificado
-          if(item.name == "Calificado"){
-            item.parameters.reduccion_nota.value = parseFloat(document.getElementById('reduccion_nota').value);
-          }
+          //actualizacion de parametros Calificado - de existir un parametro
+        
       });
       //Recoger los test cases ingresados por el profesor 
       const testCases = document.getElementById('test_cases').value
-      const jsonTestCases = procesarTestCases(testCases);
+      const jsonTestCases = armarTestCases(testCases);
 
       //Datos para enviar al archivo de pyhton
         const data ={
@@ -283,7 +266,10 @@ function EpnXBlockStudio(runtime, element, data){
             test_cases : jsonTestCases,
 
             //carga de reto_config
-            retro: retro_Data
+            retro: retro_Data,
+
+            //Ip del servidor 
+            ip_server: document.getElementById('ip_server').value
                         
           };
 

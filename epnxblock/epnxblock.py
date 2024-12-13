@@ -43,9 +43,8 @@ class EpnXBlock(XBlock):
         scope = Scope.settings
     )
 
-
     #Campo para almacenar informacion GENERAL -----------------------------------------# 
-
+    #Definido por el profesor para que los estudiantes solo vean, solo el profesor puede editarlos
     #Caracter Obligatorio
     titulo = String(
         help="Titulo de la arctividad",
@@ -74,19 +73,21 @@ class EpnXBlock(XBlock):
     #Campos para retroalimentacion ------------------------------------------------------#
 
     #Campo bandera tipo diccionario para cada retroalimentacion para mostar al estudiante
+    #Se cargan de config_retro pero son propios de cada estudiante 
+    #Ejemplo si el numero de pistas es 3 este puede disminuir segun las acciones del estudiante 
     field_Pista = Dict(
         default={"label":"Pistas", "numero_pistas": 1,"grado": 0, "state": 0},
-        scope = Scope.settings
+        scope = Scope.user_state
     )
 
 
     field_Calificado = Dict(
-        default={"label":"Calificado", "reduccion_nota": 0, "state": 0},
-        scope = Scope.settings
+        default={"label":"Calificado", "state": 0},
+        scope = Scope.user_state
     )
     
     #Campos para Codigo -----------------------------------------------------------------#
-
+    #Son definidos por el profesor y son para todos los estudiantes , solo el profesor puede editar 
     codigo_inicial = String(
         help="Se almacena el codigo incial brindado por el profesor - OPCIONAL",
         default= "Sin asignar",
@@ -101,18 +102,13 @@ class EpnXBlock(XBlock):
 
 
     #Campo del estudiante: 
+    #El valor es unico para cada estudiante
     codigo_estudiante = String(
         help="Se almacena el codigo del estudiante para hacer la peticion a la IA",
         default= "",
-        scope= Scope.content
+        scope= Scope.user_state
     )
 
-    #Prueba de obtener informacion del curso
-    estudiante_id = String(
-        scope=Scope.user_state, help="ID del estudiante"
-        )
-    curso_id = String(scope=Scope.settings, help="ID del curso")
-    actividad_id = String(scope=Scope.settings, help="ID de la actividad")
 
     def resource_string(path):
         """Ayudante práctico para obtener recursos de nuestro kit."""
@@ -160,10 +156,16 @@ class EpnXBlock(XBlock):
         frag = Fragment(str(html_str).format(block=self))
        
 
-        #Pasar el campo JSON para ser tratado por JS
+        #Pasar el campo JSON para ser tratado por JS - para la retroalimentacion 
         frag.add_content(
             '<script type= "application/json" id= "checkbox-data">{}</script>'.format(json.dumps(self.config_retro))
         )
+
+        #Pasar el campo JSON de los test cases para se mostrados del lado del profesor
+        frag.add_content(
+            '<script type= "application/json" id= "test_casesJSON">{}</script>'.format(json.dumps(self.test_cases))
+        )
+
 
         # Carga de archivo CSS 
         css_str = importlib.resources.files(__package__).joinpath("static/css/epnxblock.css").read_text(encoding="utf-8")
@@ -204,12 +206,36 @@ class EpnXBlock(XBlock):
 
         for item in new_config_retro.get('retroalimentacion',[]):
             if item.get('name') == 'Pistas':
+                #Almacenar variables en campos para estudiantes 
                 self.field_Pista['numero_pistas'] = item['parameters']['numero_pistas']['value']
                 self.field_Pista['grado'] = item['parameters']['grado']['value']
                 self.field_Pista['state'] = item['state']
             if item.get('name') == 'Calificado': 
-                self.field_Calificado['reduccion_nota'] = item['parameters']['reduccion_nota']['value']
+              
                 self.field_Calificado['state'] = item['state']
+        
+        # Guardar la IP del servidor
+        ip_server = data.get('ip_server',"")
+        #Ruta de archivo de configuracion
+        resource_path = importlib.resources.files(__package__).joinpath('static/data/config.json')
+
+        #Guardado de archivo de configuracion 
+        try:
+            # Leer el contenido actual del archivo de configuración
+            with open(resource_path, "r", encoding="utf-8") as file:
+                current_config = json.load(file)
+    
+            # Actualizar solo el campo "server_ip"
+            current_config["server_ip"] = ip_server
+
+            # Escribir el archivo de configuración actualizado
+            with open(resource_path, "w", encoding="utf-8") as file:
+                json.dump(current_config, file, indent=4)
+            return {"result": "success"}
+        
+        except Exception as e: 
+            return {"result": "error","message": str(e)}
+
 
     @XBlock.json_handler
     def envio_respuesta(self, data, suffix=''):
