@@ -303,6 +303,7 @@ function EpnXBlockStudio(runtime, element, data){
             type: 'POST', 
             url: handlerUrl,
             data: JSON.stringify(data),
+            contentType: 'application/json',
             success: function(){
                 alert('Datos guardados Exitosamente');
                 

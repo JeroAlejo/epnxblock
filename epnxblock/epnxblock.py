@@ -74,7 +74,7 @@ class EpnXBlock(XBlock):
 
     #Campo bandera tipo diccionario para cada retroalimentacion para mostar al estudiante
     #Se cargan de config_retro pero son propios de cada estudiante 
-    #Ejemplo si el numero de pistas es 3 este puede disminuir segun las acciones del estudiante 
+    
     field_Pista = Dict(
         default={"label":"Pistas", "numero_pistas": 1,"grado": 0, "state": 0},
         scope = Scope.user_state
@@ -85,6 +85,8 @@ class EpnXBlock(XBlock):
         default={"label":"Calificado", "state": 0},
         scope = Scope.user_state
     )
+
+   
     
     #Campos para Codigo -----------------------------------------------------------------#
     #Son definidos por el profesor y son para todos los estudiantes , solo el profesor puede editar 
@@ -118,6 +120,9 @@ class EpnXBlock(XBlock):
     #DECLARACION DE VISTAS: 
     #VISTA DE ESTUDIANTE 
     def student_view(self, context=None):
+
+        #Poner valores 
+        
 
         """
         La vista principal de EpnXBlock, que se muestra a los estudiantes
@@ -265,7 +270,7 @@ class EpnXBlock(XBlock):
             "salida_esperada": self.salida_esperada,
             "tipo_retroalimentacion": tipo_retroalimentacion,
             "contexto_adicional": data.get('contexto_adicional'),
-            "compilador": data.get('compilador'),
+            "salida_compilador": data.get('compilador'),
             "test_case": self.test_cases
         }
 
@@ -279,15 +284,21 @@ class EpnXBlock(XBlock):
             response = requests.post(server_url, json=payload)
             response.raise_for_status()  # Levanta excepciones para errores HTTP
             response_data = response.json()
-            print("Respuesta del servidor retroalimentación: ", response_data)
-        
+
+            # Acceder a todo el contenido de 'retroalimentacion'
+            retroalimentacion = response_data.get('retroalimentacion', 'Sin retroalimentación')
+
+            # Imprimir el contenido de retroalimentacion en formato JSON legible
+            print("Retroalimentación del servidor:")
+            print(json.dumps(retroalimentacion, indent=4, ensure_ascii=False))
+
             # Reducir el número de pistas si la petición fue exitosa y es de tipo Pista
             if self.field_Pista['state'] == 1:
                 self.field_Pista["numero_pistas"] -= 1
 
             return {
-                "ia_response": response_data.get('message', 'Sin respuesta'),
-                "pistas_restantes": self.field_Pista["numero_pistas"]
+            "ia_response": retroalimentacion,
+            "pistas_restantes": self.field_Pista["numero_pistas"]
             }
 
         except requests.exceptions.RequestException as e:
