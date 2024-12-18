@@ -3,12 +3,14 @@
 function EpnXBlockStudio(runtime, element, data){
 
 
- // Asegúrate de que SweetAlert2 está cargado desde el CDN
+ // PENDIENTE
+ /*
  if (typeof Swal === 'undefined') {
   console.error('SweetAlert2 no está disponible');
   } else {
   console.log('SweetAlert2 cargado correctamente');
   }
+  */
 
 
   //Obtener JSON para los tipos de retroalimentacion y sus parametros
@@ -116,17 +118,21 @@ function EpnXBlockStudio(runtime, element, data){
     return testCases;
   }
 
-  // Función para convertir JSON a formato de texto para el textarea
   function convertirJSONaTexto(jsonTestCases) {
-  let formattedText = '';
-  Object.entries(jsonTestCases).forEach(([key, value]) => {
-      formattedText += `Case:\n`;
-      formattedText += `Grade_reduction =\n${value["Grade reduction"]}\n`;
-      formattedText += `input =\n${value.input}\n`;
-      formattedText += `output =\n${value.output}\n\n`;
-  });
-  return formattedText.trim(); // Eliminar espacios extra al final
-  }
+    // Verificar si jsonTestCases está vacío, indefinido o no es un objeto
+    if (!jsonTestCases || Object.keys(jsonTestCases).length === 0) {
+        return ''; // Retornar un texto vacío si no hay test cases
+    }
+
+    let formattedText = '';
+    Object.entries(jsonTestCases).forEach(([key, value]) => {
+        formattedText += `Case:\n`;
+        formattedText += `Grade_reduction =\n${value["Grade reduction"] || ''}\n`;
+        formattedText += `input =\n${value.input || ''}\n`;
+        formattedText += `output =\n${value.output || ''}\n\n`;
+    });
+    return formattedText.trim(); // Eliminar espacios extra al final
+}
 
   // Convertir JSON a texto
   const testCasesTexto = convertirJSONaTexto(test_cases);

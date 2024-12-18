@@ -26,18 +26,25 @@ function EpnXBlock(runtime, element, init_args) {
   
   console.log("Contenido de evaluacion:", evaluation_data)
 
-  //Funciones complementarias 
-  function actualizar_campos(response){
-    $('.ai_response',element).text(response.ia_response);
-    $('#num_pistas',element).text(response.pistas_restantes);
+  function actualizar_campos(response) {
+    // Convertir ia_response a texto si es un objeto
+    let ia_response_formateada = typeof response.ia_response === 'object'
+        ? JSON.stringify(response.ia_response, null, 4) // Formatea con 4 espacios
+        : response.ia_response;
 
-    if(response.pistas_restantes == 0){
-      $('#test_code',element).prop('disabled', true);
-    }else{
-      
+    // Actualizar el campo de la respuesta
+    $('.ai_response', element).text(ia_response_formateada);
+
+    // Actualizar el número de pistas restantes
+    $('#num_pistas', element).text(response.pistas_restantes);
+
+    // Deshabilitar el botón si no hay pistas restantes
+    if (response.pistas_restantes == 0) {
+        $('#test_code', element).prop('disabled', true);
     }
-    console.log('Actualizacion realizada');
-  };
+
+    console.log('Actualización realizada');
+};
 
   //Funcion para validar datos antes de enviar al servidor
   function validar_datos(data){
