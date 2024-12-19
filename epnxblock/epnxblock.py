@@ -188,59 +188,88 @@ class EpnXBlock(XBlock):
         return frag
 
     #CONTROLADORES 
+    @XBlock.json_handler
+    def guardar_configuracion(self, data, suffix=''):
+        try:
+          
+    
+            # Imprimir los datos entrantes para verificar si son correctos
+            print(f"Datos recibidos: {data}")
+    
+            # Manejador que guarda las configuraciones del profesor en los campos GENERAL
+            self.titulo = data.get('titulo')
+            self.descripcion = data.get('descripcion')
+            self.salida_esperada = data.get('salida_esperada')
+            self.fecha_entrega = data.get('fecha_entrega')
+            
+            # Codigo
+            self.codigo_inicial = data.get('codigo_inicial')
+            self.test_cases = data.get('test_cases', {})
+    
+            # Parametros en el Campo
+            self.config_retro = data.get('retro')
+    
+            return {"success": True}
+        except Exception as e:
+            print(f"Error al guardar la configuración: {e}")
+            return {"error": str(e)}, 500
 
     @XBlock.json_handler
     def guardar_configuracion(self, data, suffix=''):
-
-        # Imprimir los datos entrantes para verificar si son correctos
-        print(f"Datos recibidos: {data}")
-        #Manejador que guarda las configuraciones del profesor en los campos GENERAL
-        self.titulo = data.get('titulo')
-        self.descripcion = data.get('descripcion')
-        self.salida_esperada = data.get('salida_esperada')
-        self.fecha_entrega = data.get('fecha_entrega')
-        #Codigo
-        self.codigo_inicial = data.get('codigo_inicial')
-        self.test_cases = data.get('test_cases',{})
-
-        #Parametros en el Campo
-        self.config_retro = data.get('retro')  
-
-        #Guardar JSON en archivo de configuracion y guardar variables clave en Campos 
-        new_config_retro = data.get('retro',{})
-
-        for item in new_config_retro.get('retroalimentacion',[]):
-            if item.get('name') == 'Pistas':
-                #Almacenar variables en campos para estudiantes 
-                self.field_Pista['numero_pistas'] = item['parameters']['numero_pistas']['value']
-                self.field_Pista['grado'] = item['parameters']['grado']['value']
-                self.field_Pista['state'] = item['state']
-            if item.get('name') == 'Calificado': 
-              
-                self.field_Calificado['state'] = item['state']
-        
-        # Guardar la IP del servidor
-        ip_server = data.get('ip_server',"")
-        #Ruta de archivo de configuracion
-        resource_path = importlib.resources.files(__package__).joinpath('static/data/config.json')
-
-        #Guardado de archivo de configuracion 
-        try:
-            # Leer el contenido actual del archivo de configuración
-            with open(resource_path, "r", encoding="utf-8") as file:
-                current_config = json.load(file)
+            try:
+                # Imprimir los datos entrantes para verificar si son correctos
+                print(f"Datos recibidos: {data}")
     
-            # Actualizar solo el campo "server_ip"
-            current_config["server_ip"] = ip_server
-
-            # Escribir el archivo de configuración actualizado
-            with open(resource_path, "w", encoding="utf-8") as file:
-                json.dump(current_config, file, indent=4)
-            return {"result": "success"}
+                # Manejador que guarda las configuraciones del profesor en los campos GENERAL
+                self.titulo = data.get('titulo')
+                self.descripcion = data.get('descripcion')
+                self.salida_esperada = data.get('salida_esperada')
+                self.fecha_entrega = data.get('fecha_entrega')
+                
+                # Codigo
+                self.codigo_inicial = data.get('codigo_inicial')
+                self.test_cases = data.get('test_cases', {})
+    
+                # Parametros en el Campo
+                self.config_retro = data.get('retro')
+    
+                # Procesar retroalimentación
+                new_config_retro = data.get('retro', {})
+                for item in new_config_retro.get('retroalimentacion', []):
+                    if item.get('name') == 'Pistas':
+                        # Almacenar variables en campos para estudiantes 
+                        self.field_Pista['numero_pistas'] = item['parameters']['numero_pistas']['value']
+                        self.field_Pista['grado'] = item['parameters']['grado']['value']
+                        self.field_Pista['state'] = item['state']
+                    if item.get('name') == 'Calificado': 
+                        self.field_Calificado['state'] = item['state']
+                
+                # Guardar la IP del servidor
+                ip_server = data.get('ip_server', "")
+                # Ruta de archivo de configuracion
+                resource_path = importlib.resources.files(__package__).joinpath('static/data/config.json')
         
-        except Exception as e: 
-            return {"result": "error","message": str(e)}
-
+                # Guardado de archivo de configuracion 
+                try:
+                    # Leer el contenido actual del archivo de configuración
+                    with open(resource_path, "r", encoding="utf-8") as file:
+                        current_config = json.load(file)
+            
+                    # Actualizar solo el campo "server_ip"
+                    current_config["server_ip"] = ip_server
+        
+                    # Escribir el archivo de configuración actualizado
+                    with open(resource_path, "w", encoding="utf-8") as file:
+                        json.dump(current_config, file, indent=4)
+                    return {"result": "success"}
+                
+                except Exception as e: 
+                    return {"result": "error", "message": str(e)}
+    
+                return {"success": True}
+            except Exception as e:
+                print(f"Error al guardar la configuración: {e}")
+                return {"error": str(e)}, 500
 
     @XBlock.json_handler
     def envio_respuesta(self, data, suffix=''):
