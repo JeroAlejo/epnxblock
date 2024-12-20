@@ -11,12 +11,12 @@
         <div class="student-view">
             <h3 class="t3">Código</h3>
             <div class="buttons-container">
-                <button id="test_code">Solicitar Pista:<span id = "num_pistas"> {block.field_Pista[numero_pistas]} </span></button>
-                <button id="evaluate_code">Evaluar Código</button>
+                <button id="test_code" disabled>Solicitar Pista:<span id="pistas_usadas">{block.pistas_usadas}</span>/<span id = "num_pistas">{block.field_Pista[numero_pistas]}</span></button>
+                <button id="evaluate_code" disabled>Evaluar Código</button>
             </div>
             <div class="code-ai-container">
                 <textarea class="zona_codigo" name="zona_codigo" id="zona_codigo">{block.codigo_inicial}</textarea>
-                <textarea class="ai_response" name="ai_response" id=""></textarea>
+                <textarea class="ai_response" name="ai_response"  id=""></textarea>
             </div>
         </div>
     

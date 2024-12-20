@@ -77,13 +77,13 @@ class EpnXBlock(XBlock):
     
     field_Pista = Dict(
         default={"label":"Pistas", "numero_pistas": 1,"grado": 0, "state": 0},
-        scope = Scope.user_state
+        scope = Scope.content
     )
 
 
     field_Calificado = Dict(
         default={"label":"Calificado", "state": 0},
-        scope = Scope.user_state
+        scope = Scope.content
     )
 
    
@@ -111,6 +111,13 @@ class EpnXBlock(XBlock):
         scope= Scope.user_state
     )
 
+    #Valor individual de pistas que consume cada estudiante
+    pistas_usadas = Integer(
+        help="Cantidad de pistas restantes",
+        default= 0,
+        scope= Scope.user_state
+    )
+
 
     def resource_string(path):
         """Ayudante práctico para obtener recursos de nuestro kit."""
@@ -121,14 +128,13 @@ class EpnXBlock(XBlock):
     #VISTA DE ESTUDIANTE 
     def student_view(self, context=None):
 
-        #Poner valores 
-        
-
+        #Poner valores
         """
         La vista principal de EpnXBlock, que se muestra a los estudiantes
         """
         data = {"eva":[{ "Pista": {"label": self.field_Pista["label"], "state": self.field_Pista["state"], "numero_pistas": self.field_Pista["numero_pistas"]}},
-        {"Calificado": {"label":self.field_Calificado["label"] ,"state": self.field_Calificado["state"] }}]}
+        {"Calificado": {"label":self.field_Calificado["label"] ,"state": self.field_Calificado["state"] }}], "pistas_usadas": self.pistas_usadas}
+
 
         #Carga de Fragmento HTML
         html = importlib.resources.files(__package__).joinpath("static/html/epnxblock.html").read_text(encoding="utf-8")
@@ -273,10 +279,10 @@ class EpnXBlock(XBlock):
 
     @XBlock.json_handler
     def envio_respuesta(self, data, suffix=''):
-        #Lo que se recibe de Html
+        # Lo que se recibe de Html
         print(data)
 
-        #Obtener el ID del estudiante y actividad
+        # Obtener el ID del estudiante y actividad
         estudiante_id = self.runtime.user_id
         actividad_id = self.scope_ids.usage_id
         print(f"El id es: {estudiante_id}")
@@ -292,21 +298,30 @@ class EpnXBlock(XBlock):
         # Función para generar payload -- se carga la variable aux 
         def generar_payload(tipo_retroalimentacion):
             return {
-            "id_estudiante": estudiante_id,
-            "id_tarea": actividad_id,
-            "descripcion_tarea": self.descripcion,
-            "codigo_estudiante": self.codigo_estudiante,
-            "salida_esperada": self.salida_esperada,
-            "tipo_retroalimentacion": tipo_retroalimentacion,
-            "contexto_adicional": data.get('contexto_adicional'),
-            "salida_compilador": data.get('compilador'),
-            "test_case": self.test_cases
-        }
+                "id_estudiante": estudiante_id,
+                "id_tarea": actividad_id,
+                "descripcion_tarea": self.descripcion,
+                "codigo_estudiante": self.codigo_estudiante,
+                "salida_esperada": self.salida_esperada,
+                "tipo_retroalimentacion": tipo_retroalimentacion,
+                "contexto_adicional": data.get('contexto_adicional'),
+                "salida_compilador": data.get('compilador'),
+                "test_case": self.test_cases
+            }
+
+        # Verificar si se alcanzaron las pistas máximas
+        if self.field_Pista["numero_pistas"] == self.pistas_usadas:
+            
+            return {
+                "ia_response": "Ya no se permiten más pistas, se ha alcanzado el límite máximo.",
+                "pistas_totales":  self.field_Pista["numero_pistas"],
+                "pistas_usadas": self.pistas_usadas,
+                "bandera": False
+            }
 
         # Determinar el tipo de retroalimentación
-        payload = None
         payload = generar_payload(data.get('aux'))
-       
+
         # Enviar la petición al servidor
         try:
             print(f"Enviando payload: {payload}")
@@ -321,18 +336,21 @@ class EpnXBlock(XBlock):
             print("Retroalimentación del servidor:")
             print(json.dumps(retroalimentacion, indent=4, ensure_ascii=False))
 
-            # Reducir el número de pistas si la petición fue exitosa y es de tipo Pista
-            if self.field_Pista['state'] == 1:
-                self.field_Pista["numero_pistas"] -= 1
+            # Incrementar las pistas usadas solo si el servidor responde correctamente
+            if self.field_Pista["state"] == 1:
+                self.pistas_usadas += 1
 
             return {
-            "ia_response": retroalimentacion,
-            "pistas_restantes": self.field_Pista["numero_pistas"]
+                "ia_response": retroalimentacion,
+                "pistas_totales": self.field_Pista["numero_pistas"],
+                "pistas_usadas": self.pistas_usadas,
+                "bandera": True
             }
 
         except requests.exceptions.RequestException as e:
             print("Error al enviar transacción: ", str(e))
-            return {"ia_response": "Error de conexión al servidor de Retroalimentación"}
+        return {"ia_response": "Error de conexión al servidor de Retroalimentación"}
+
 
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.

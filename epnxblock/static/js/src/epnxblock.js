@@ -27,24 +27,21 @@ function EpnXBlock(runtime, element, init_args) {
   console.log("Contenido de evaluacion:", evaluation_data)
 
   function actualizar_campos(response) {
-    // Convertir ia_response a texto si es un objeto
-    let ia_response_formateada = typeof response.ia_response === 'object'
+    console.log(response);
+    // Actualiza el valor de pistas usadas
+    $('#pistas_usadas', element).text(response.pistas_usadas);
+
+    // Deshabilita el botón si ya no quedan pistas disponibles
+    if (!response.bandera) {
+      $('.ai_response', element).text(response.ia_response)
+    } else {
+      // Actualiza la respuesta de la IA en el campo correspondiente
+      let ia_response_formateada = typeof response.ia_response === 'object'
         ? JSON.stringify(response.ia_response, null, 4) // Formatea con 4 espacios
         : response.ia_response;
-
-    // Actualizar el campo de la respuesta
-    $('.ai_response', element).text(ia_response_formateada);
-
-    // Actualizar el número de pistas restantes
-    $('#num_pistas', element).text(response.pistas_restantes);
-
-    // Deshabilitar el botón si no hay pistas restantes
-    if (response.pistas_restantes == 0) {
-        $('#test_code', element).prop('disabled', true);
+      $('.ai_response', element).text(ia_response_formateada);
     }
-
-    console.log('Actualización realizada');
-};
+  }
 
   //Funcion para validar datos antes de enviar al servidor
   function validar_datos(data){
@@ -56,7 +53,7 @@ function EpnXBlock(runtime, element, init_args) {
       return true;
     }
   }
-
+  /*
   //Control de botones  
   // Verificar estado de "Pista"
   if (evaluation_data.eva[0].Pista.state === 1) {
@@ -71,6 +68,23 @@ function EpnXBlock(runtime, element, init_args) {
   } else {
     $('#evaluate_code').prop('disabled', true); // Deshabilitar botón
   }
+    */
+  $(document).ready(function () {
+    // Habilitar o deshabilitar el botón "Solicitar Pista"
+    if (evaluation_data.eva[0].Pista.state === 1) {
+        $('#test_code', element).prop('disabled', false); // Habilitar botón
+    } else {
+        $('#test_code', element).prop('disabled', true); // Deshabilitar botón
+    }
+
+    // Habilitar o deshabilitar el botón "Evaluar Código"
+    if (evaluation_data.eva[1].Calificado.state === 1) {
+        $('#evaluate_code', element).prop('disabled', false); // Habilitar botón
+    } else {
+        $('#evaluate_code', element).prop('disabled', true); // Deshabilitar botón
+    }
+  });
+  
 
   // Funcionalidad de flecha para mostrar/ocultar 
   $('#toggle-arrow').on('click', function () {
@@ -92,7 +106,7 @@ function EpnXBlock(runtime, element, init_args) {
         codigo_estudiante: document.getElementById('zona_codigo').value,
         contexto_adicional : document.getElementById('aditional_context').value,
         compilador : document.getElementById('compilador_check').checked,
-        aux : evaluation_data.eva[0].Pista.label
+        aux : evaluation_data.eva[0].Pista.label,
       }
 
       if(!validar_datos(data)){

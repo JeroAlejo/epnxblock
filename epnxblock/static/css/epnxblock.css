@@ -14,7 +14,7 @@ body{
 .header{
     display: flex;
     align-items: center;
-    background-color: rgb(191, 188, 199);
+    background-color:  #9bc3eb;
 }
 
 .titulo_h{
@@ -51,9 +51,9 @@ body{
 }
 
 .nav-links li a:hover{
-    background-color: #ffbc0e;
+    background-color: #1e93bf;
     color: white;
-
+    
 }
 
 
@@ -62,7 +62,7 @@ body{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    background-color: floralwhite;
+    background-color: #f3f2fa;
 }
 
 .item{
@@ -73,7 +73,7 @@ body{
 .item_2{
     flex-grow: 1;
     padding-top: 2%;
-    background-color: rgb(223, 192, 192);
+    background-color:#f3f2fa;
 }
 .text_info{
     width: 70%; 
@@ -120,7 +120,7 @@ body{
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: space-between;
-    background-color: floralwhite;
+    background-color:#f3f2fa;
     height: 90%;
 }
 
