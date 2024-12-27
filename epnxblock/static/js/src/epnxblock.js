@@ -118,6 +118,7 @@ function EpnXBlock(runtime, element, init_args) {
         type: "POST",                                 //Solcitud POST
         url: handlerUrl,                              //Uso de la URL generada 
         data: JSON.stringify(data),                   //Envio de un Objeto JSON con los datos
+        contentType: 'application/json',
         success: actualizar_campos                    //si la solcitud es exitosa, ejecuta la funcion 
     });
     });
@@ -135,6 +136,7 @@ function EpnXBlock(runtime, element, init_args) {
           type: "POST",                                 //Solcitud POST
           url: handlerUrl,                              //Uso de la URL generada 
           data: JSON.stringify(data),                   //Envio de un Objeto JSON con los datos
+          contentType: 'application/json',
           success: actualizar_campos                    //si la solcitud es exitosa, ejecuta la funcion 
       });
       });

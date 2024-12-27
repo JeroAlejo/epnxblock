@@ -252,7 +252,7 @@ class EpnXBlock(XBlock):
 
         # Obtener el ID del estudiante y actividad
         estudiante_id = self.runtime.user_id
-        actividad_id = self.scope_ids.usage_id
+        actividad_id = str(self.scope_ids.usage_id)
         print(f"El id es: {estudiante_id}")
         print(f"El id de la actividad es: {actividad_id}")
 
