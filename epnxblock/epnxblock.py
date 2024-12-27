@@ -23,6 +23,13 @@ def cargar_config_retro():
             config = json.load(file)
     return config
 
+#Funcion de Carga de configuracion -- Para el servidor en el Campo
+def cargar_configuracion_server():
+    config_path = importlib.resources.files(__package__).joinpath('static/data/config.json')
+    with open(config_path, 'r', encoding='utf-8') as file:
+            config_server = json.load(file)
+    return config_server
+
 #Funcion de Carga de configuracion -- Para el servidor 
 def cargar_configuracion():
     config_path = importlib.resources.files(__package__).joinpath('static/data/config.json')
@@ -30,12 +37,19 @@ def cargar_configuracion():
             config = json.load(file)
     return config
 
+
+
 log = logging.getLogger(__name__)
 
 class EpnXBlock(XBlock):
     """
     TO-DO: document what your XBlock does.
     """
+    #Campo para almacenar la IP del servidor y puerto
+    server = Dict(
+        default= cargar_configuracion_server(),
+        scope = Scope.settings
+    )
 
     #Campo que almacena el JSON de config_retro para ser inicializado
     config_retro = Dict(
@@ -193,33 +207,7 @@ class EpnXBlock(XBlock):
 
         return frag
 
-    #CONTROLADORES 
-    @XBlock.json_handler
-    def guardar_configuracion(self, data, suffix=''):
-        try:
-          
-    
-            # Imprimir los datos entrantes para verificar si son correctos
-            print(f"Datos recibidos: {data}")
-    
-            # Manejador que guarda las configuraciones del profesor en los campos GENERAL
-            self.titulo = data.get('titulo')
-            self.descripcion = data.get('descripcion')
-            self.salida_esperada = data.get('salida_esperada')
-            self.fecha_entrega = data.get('fecha_entrega')
-            
-            # Codigo
-            self.codigo_inicial = data.get('codigo_inicial')
-            self.test_cases = data.get('test_cases', {})
-    
-            # Parametros en el Campo
-            self.config_retro = data.get('retro')
-    
-            return {"success": True}
-        except Exception as e:
-            print(f"Error al guardar la configuración: {e}")
-            return {"error": str(e)}, 500
-
+    #CONTROLADORES
     @XBlock.json_handler
     def guardar_configuracion(self, data, suffix=''):
             try:
@@ -250,29 +238,9 @@ class EpnXBlock(XBlock):
                     if item.get('name') == 'Calificado': 
                         self.field_Calificado['state'] = item['state']
                 
-                # Guardar la IP del servidor
-                ip_server = data.get('ip_server', "")
-                # Ruta de archivo de configuracion
-                resource_path = importlib.resources.files(__package__).joinpath('static/data/config.json')
-        
-                # Guardado de archivo de configuracion 
-                try:
-                    # Leer el contenido actual del archivo de configuración
-                    with open(resource_path, "r", encoding="utf-8") as file:
-                        current_config = json.load(file)
-            
-                    # Actualizar solo el campo "server_ip"
-                    current_config["server_ip"] = ip_server
-        
-                    # Escribir el archivo de configuración actualizado
-                    with open(resource_path, "w", encoding="utf-8") as file:
-                        json.dump(current_config, file, indent=4)
-                    return {"result": "success"}
+                # Guardar la IP del servidor en el campo
+                self.server['server_ip'] = data.get('ip_server', "")
                 
-                except Exception as e: 
-                    return {"result": "error", "message": str(e)}
-    
-                return {"success": True}
             except Exception as e:
                 print(f"Error al guardar la configuración: {e}")
                 return {"error": str(e)}, 500
@@ -292,8 +260,7 @@ class EpnXBlock(XBlock):
         self.codigo_estudiante = data.get('codigo_estudiante')
 
         # Enlace al servidor desde archivo de configuración
-        config = cargar_configuracion()
-        server_url = f"http://{config['server_ip']}:{config['server_port']}/api/transaccion"
+        server_url = f"http://{self.server['server_ip']}:{self.server['server_port']}/api/transaccion"
 
         # Función para generar payload -- se carga la variable aux 
         def generar_payload(tipo_retroalimentacion):
@@ -310,7 +277,7 @@ class EpnXBlock(XBlock):
             }
 
         # Verificar si se alcanzaron las pistas máximas
-        if self.field_Pista["numero_pistas"] == self.pistas_usadas:
+        if self.field_Pista["numero_pistas"] == self.pistas_usadas and data.get('aux') == "Pistas":
             
             return {
                 "ia_response": "Ya no se permiten más pistas, se ha alcanzado el límite máximo.",
