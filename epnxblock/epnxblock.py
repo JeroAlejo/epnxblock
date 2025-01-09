@@ -100,13 +100,12 @@ class EpnXBlock(XBlock):
         scope = Scope.content
     )
 
-   
     
     #Campos para Codigo -----------------------------------------------------------------#
     #Son definidos por el profesor y son para todos los estudiantes , solo el profesor puede editar 
     codigo_inicial = String(
         help="Se almacena el codigo incial brindado por el profesor - OPCIONAL",
-        default= "Sin asignar",
+        default= "",
         scope= Scope.content
     )
 
@@ -147,7 +146,8 @@ class EpnXBlock(XBlock):
         La vista principal de EpnXBlock, que se muestra a los estudiantes
         """
         data = {"eva":[{ "Pista": {"label": self.field_Pista["label"], "state": self.field_Pista["state"], "numero_pistas": self.field_Pista["numero_pistas"]}},
-        {"Calificado": {"label":self.field_Calificado["label"] ,"state": self.field_Calificado["state"] }}], "pistas_usadas": self.pistas_usadas}
+        {"Calificado": {"label":self.field_Calificado["label"] ,"state": self.field_Calificado["state"] }}], "pistas_usadas": self.pistas_usadas, "codigo_inicial":self.codigo_inicial, 
+        "codigo_estudiante":self.codigo_estudiante}
 
 
         #Carga de Fragmento HTML

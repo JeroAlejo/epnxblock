@@ -44,10 +44,19 @@ function EpnXBlock(runtime, element, init_args) {
   }
 
   //Funcion para validar datos antes de enviar al servidor
-  function validar_datos(data){
+  function validar_compilador(data){
     console.log(data);
     //Validamos los campos compilador 
     if(data['compilador'] == true && (data['contexto_adicional'] == ''  || data['contexto_adicional']==null)){
+      return false;
+    }else{
+      return true;
+    }
+   }
+
+   function validar_codigoSalida(data){
+    //validamos campo codigo estudiante 
+    if(data['codigo_estudiante'] == '' || data['codigo_estudiante']==null){
       return false;
     }else{
       return true;
@@ -83,6 +92,13 @@ function EpnXBlock(runtime, element, init_args) {
     } else {
         $('#evaluate_code', element).prop('disabled', true); // Deshabilitar botón
     }
+
+    if(evaluation_data.codigo_estudiante==null || evaluation_data.codigo_estudiante==''){
+      $('#zona_codigo').val(evaluation_data.codigo_inicial);
+    }else{
+      $('#zona_codigo').val(evaluation_data.codigo_estudiante);
+
+    }
   });
   
 
@@ -109,7 +125,12 @@ function EpnXBlock(runtime, element, init_args) {
         aux : evaluation_data.eva[0].Pista.label,
       }
 
-      if(!validar_datos(data)){
+      if(!validar_codigoSalida(data)){
+        alert('El campo de código no puede ser vacio');
+        return;
+      }
+
+      if(!validar_compilador(data)){
         alert('Es necesario añadir el contexto adicional si marcas la opción salida de compilador');
         return;
       }
@@ -126,11 +147,24 @@ function EpnXBlock(runtime, element, init_args) {
     //Tipo Calificado
     $(element).find("#evaluate_code").click(function(){
       console.log(init_args)
+      const data ={
+        codigo_estudiante: document.getElementById('zona_codigo').value,
+        contexto_adicional : document.getElementById('aditional_context').value,
+        compilador : document.getElementById('compilador_check').checked,
+        aux : evaluation_data.eva[1].Calificado.label
+      }
+
+      if(!validar_codigoSalida(data)){
+        alert('El campo de código no puede ser vacio');
+        return;
+      }
+
+      if(!validar_compilador(data)){
+        alert('Es necesario añadir el contexto adicional si marcas la opción salida de compilador');
+        return;
+      }
         
-        const data ={
-          codigo_estudiante: document.getElementById('zona_codigo').value,
-          aux : evaluation_data.eva[1].Calificado.label
-        }
+        
         console.log(data)
         $.ajax({
           type: "POST",                                 //Solcitud POST
