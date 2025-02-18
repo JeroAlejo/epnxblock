@@ -61,7 +61,7 @@ function EpnXBlock(runtime, element, init_args) {
     }else{
       return true;
     }
-  }
+   }
   /*
   //Control de botones  
   // Verificar estado de "Pista"

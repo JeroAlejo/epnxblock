@@ -98,8 +98,7 @@ function EpnXBlockStudio(runtime, element, data){
         const gradeReduction = match[1]?.trim();
         const input = match[2]?.trim();
         const output = match[3]?.trim();
-
-      
+        
         // Guardar el caso procesado
         testCases[caseName] = {
             "Grade reduction": gradeReduction,
@@ -230,15 +229,14 @@ function EpnXBlockStudio(runtime, element, data){
     }
   });
   
-  //FUNCIONES PARA GUARDAR DATOS
+  //Mecanismo para validar y guardar la configuracion
   const handlerUrl = runtime.handlerUrl(element,'guardar_configuracion'); //Nombre del controlador en pyhton
     $(element).find(".updateButton").click(function(){
       
       //Config_data - Retroalimentacion
-      //analizar estado de checkboxes
+      //Recoleccion de informacion de la retroaliemtación desde los checkboxes
       retro_Data.retroalimentacion.forEach(item =>{
 
-        //actualizacion de la variable state
         const checkbox = document.querySelector(`input[id="${item.name}"]`);
         if (checkbox) {
             item.state = checkbox.checked ? 1 : 0;
@@ -249,14 +247,13 @@ function EpnXBlockStudio(runtime, element, data){
           if(item.name == "Pistas"){
             item.parameters.numero_pistas.value = parseInt(document.getElementById('numero_pistas').value);
             item.parameters.grado.value = parseFloat(document.getElementById('grado').value);
-
           }
-
           //actualizacion de parametros Calificado - de existir un parametro
-        
       });
+
       //Recoger los test cases ingresados por el profesor 
       const testCases = document.getElementById('test_cases').value
+      // Convertir el texto a JSON y validar
       const jsonTestCases = armarTestCases(testCases);
 
       //Datos para enviar al archivo de pyhton
@@ -283,22 +280,12 @@ function EpnXBlockStudio(runtime, element, data){
           if(!validar_Datos(data)){
             alert('Completar todos los campos generales antes de guardar.');
             return;
-            /* PENDIENTE POR RESOLVER
-            Swal.fire({
-              title: '¡Advertencia!',
-              text: 'Completar todos los campos generales antes de guardar.',
-              icon: 'warning',  // Icono de advertencia
-              confirmButtonText: 'Aceptar'
-          });
-            return;*/
           }
           if(!validar_retroalimentacion(retro_Data)){
             alert('No se ha seleccionado ningun tipo de Retroalimentación.');
             return;
           }
-          
-          console.log(data); 
-
+          console.log(data);
         $.ajax({
             type: 'POST', 
             url: handlerUrl,
